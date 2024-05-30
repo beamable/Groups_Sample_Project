@@ -1,0 +1,8 @@
+{
+    "cid": "1657442412455936",
+    "alias": "arayik-hovhannisyan",
+    "pid": "DE_1752011665993799",
+    "platform": "",
+    "socket": "",
+    "containerPrefix": ""
+}
