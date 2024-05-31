@@ -35,18 +35,17 @@ public class Groups : MonoBehaviour
         private GroupsView _groupsView = null;
 
 
-        protected void Start()
+        protected async void  Start()
         {
-            SetupBeamable();
+            await SetupBeamable();
             SetupUIListeners();
             
             createGroupButton.interactable = false;
         }
 
-        private async void SetupBeamable()
+        private async Task SetupBeamable()
         {
-            _beamContext = BeamContext.Default;
-            await _beamContext.OnReady;
+            _beamContext = await BeamContext.Default.Instance;
             
             _beamContext.Api.GroupsService.Subscribe(groupsView =>
             {
