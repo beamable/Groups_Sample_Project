@@ -38,7 +38,11 @@ public class CreateGroups : MonoBehaviour
         
         private GroupsView _groupsView = null;
         private GroupsView _groupsView01 = null;
-
+        
+        private TaskCompletionSource<bool> _groupsView01Ready = new TaskCompletionSource<bool>();
+        private TaskCompletionSource<bool> _groupsViewReady = new TaskCompletionSource<bool>();
+        private bool _groupsView01ReadySet = false;
+        private bool _groupsViewReadySet = false;
         
         protected async void  Start()
         {
@@ -54,23 +58,31 @@ public class CreateGroups : MonoBehaviour
             _beamContext01 = BeamContext.ForPlayer("MyPlayer01");
             await _beamContext01.OnReady;
             
-            _beamContext01.Api.GroupsService.Subscribe( groupsView =>
+            _beamContext01.Api.GroupsService.Subscribe(groupsView =>
             {
                 _groupsView01 = groupsView;
-
                 Debug.Log("GroupsService01.Subscribe 1: " + _groupsView01.Groups.Count);
-
+                if (!_groupsView01ReadySet)
+                {
+                    _groupsView01Ready.SetResult(true);
+                    _groupsView01ReadySet = true;
+                }
             });
+            
+
             
             _beamContext = await BeamContext.Default.Instance;
             _beamContext.Api.GroupsService.Subscribe(groupsView =>
             {
                 _groupsView = groupsView;
-
                 Debug.Log("GroupsService.Subscribe 1: " + _groupsView.Groups.Count);
-
+                if (!_groupsViewReadySet)
+                {
+                    _groupsViewReady.SetResult(true);
+                    _groupsViewReadySet = true;
+                }
             });
-            
+            await Task.WhenAll(_groupsView01Ready.Task, _groupsViewReady.Task);
         }
 
         private void SetupUIListeners()
@@ -137,12 +149,15 @@ public class CreateGroups : MonoBehaviour
         
         public async Task<EmptyResponse> LeaveGroups()
         {
+
             // Leave any existing groups
             foreach(var group in _groupsView.Groups)
             {
+                
                 var result = await _beamContext.Api.GroupsService.LeaveGroup(group.Group.id);
             }
-            
+            await Task.Delay(500); 
+
             // HACK: Force refresh here (0.10.1)
             // Wait (arbitrary milliseconds) for refresh to complete 
             _beamContext.Api.GroupsService.Subscribable.ForceRefresh();
@@ -154,17 +169,25 @@ public class CreateGroups : MonoBehaviour
         
         public async Task<EmptyResponse> LeaveGroupsGuest()
         {
-            // Leave any existing groups
-            foreach(var group in _groupsView01.Groups)
-            {
-                var result = await _beamContext01.Api.GroupsService.LeaveGroup(group.Group.id);
-            }
+            Debug.Log("Here0");
+                // Leave any existing groups
+                foreach (var group in _groupsView01.Groups)
+                {
+                    Debug.Log("Here1");
+
+                    var result = await _beamContext01.Api.GroupsService.LeaveGroup(group.Group.id);
+                }
             
+                Debug.Log("Here2");
+
             // HACK: Force refresh here (0.10.1)
             // Wait (arbitrary milliseconds) for refresh to complete 
             _beamContext01.Api.GroupsService.Subscribable.ForceRefresh();
+            Debug.Log("Here3");
+
             await Task.Delay(300); 
-            
+            Debug.Log("Here4");
+
             
             return new EmptyResponse();
         }
@@ -190,7 +213,7 @@ public class CreateGroups : MonoBehaviour
             {
                 await LeaveGroupsGuest();
                 
-                var groupCreateRequest = new GroupCreateRequest("groupName", "tag", "restricted", 0, 30);
+                var groupCreateRequest = new GroupCreateRequest("groupName1", "tag", "restricted", 0, 30);
                 await _beamContext01.Api.GroupsService.CreateGroup(groupCreateRequest);
 
             }
