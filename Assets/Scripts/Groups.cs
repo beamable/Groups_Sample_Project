@@ -18,6 +18,9 @@ using Update = Unity.VisualScripting.Update;
 public class Groups : MonoBehaviour
 {
         private BeamContext _beamContext;
+        /*
+        This example is made with guest players
+        */
         private BeamContext _beamContext01;
 
         [SerializeField] 
