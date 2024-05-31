@@ -15,7 +15,7 @@ using UnityEngine.UI;
 using Update = Unity.VisualScripting.Update;
 
 [System.Serializable]
-public class Groups : MonoBehaviour
+public class CreateGroups : MonoBehaviour
 {
         private BeamContext _beamContext;
         /*
@@ -39,9 +39,8 @@ public class Groups : MonoBehaviour
         private GroupsView _groupsView = null;
         private GroupsView _groupsView01 = null;
 
-
-
-        protected async void Start()
+        
+        protected async void  Start()
         {
             await SetupBeamable();
             SetupUIListeners();
@@ -52,7 +51,6 @@ public class Groups : MonoBehaviour
 
         private async Task SetupBeamable()
         {
-            
             _beamContext01 = BeamContext.ForPlayer("MyPlayer01");
             await _beamContext01.OnReady;
             
@@ -63,10 +61,8 @@ public class Groups : MonoBehaviour
                 Debug.Log("GroupsService01.Subscribe 1: " + _groupsView01.Groups.Count);
 
             });
-
-            _beamContext = BeamContext.Default;
-            await _beamContext.OnReady;
             
+            _beamContext = await BeamContext.Default.Instance;
             _beamContext.Api.GroupsService.Subscribe(groupsView =>
             {
                 _groupsView = groupsView;
