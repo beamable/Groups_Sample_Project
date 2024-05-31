@@ -25,29 +25,52 @@ public class ViewGroups : MonoBehaviour
         private GroupsView _groupsView = null;
 
 
-        protected void Start()
+        protected async void Start()
         {
-            SetupBeamable();
+            await SetupBeamable();
         }
 
-        private async void SetupBeamable()
+        private async Task SetupBeamable()
         {
             _beamContext = BeamContext.Default;
             await _beamContext.OnReady;
             
-            _beamContext.Api.GroupsService.Subscribe( groupsView =>
+            _beamContext.Api.GroupsService.Subscribe(async groupsView =>
             {
                 _groupsView = groupsView;
                 
-                groupsListText.text = "Groups:\n";
-                foreach (var groupView in groupsView.Groups)
-                {
-                    groupsListText.text += $"{groupView.Group.name}\n";
-
-                }
+                await FetchAndDisplayGroups();
                 Debug.Log("GroupsService.Subscribe 1: " + _groupsView.Groups.Count);
 
             });
         }
+        
+        private async Task FetchAndDisplayGroups()
+        {
+            try
+            {
+                // Perform a group search to get all available groups
+                var groupSearchResponse = await _beamContext.Api.GroupsService.Search("", new List<string> { "open", "closed", "restricted" });
+
+                DisplayGroups(groupSearchResponse.groups);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error fetching groups: {e.Message}");
+            }
+        }
+        
+        private void DisplayGroups(List<Group> groups)
+        {
+            groupsListText.text = "Groups:\n";
+            int count = 1;
+            foreach (var groupView in groups)
+            {
+                groupsListText.text += $"\n{count}. {groupView.name}\n";
+                count++;
+            }
+        }
+
+
 
     }

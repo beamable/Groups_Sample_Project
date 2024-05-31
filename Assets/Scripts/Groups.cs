@@ -18,6 +18,7 @@ using Update = Unity.VisualScripting.Update;
 public class Groups : MonoBehaviour
 {
         private BeamContext _beamContext;
+        private BeamContext _beamContext01;
 
         [SerializeField] 
         private TMP_Dropdown groupTypeDropdown;
@@ -33,18 +34,33 @@ public class Groups : MonoBehaviour
         private TMP_Text infoText;
         
         private GroupsView _groupsView = null;
+        private GroupsView _groupsView01 = null;
 
 
-        protected void Start()
+
+        protected async void Start()
         {
-            SetupBeamable();
+            await SetupBeamable();
             SetupUIListeners();
-            
+            await CreateGuestsGroup();
+
             createGroupButton.interactable = false;
         }
 
-        private async void SetupBeamable()
+        private async Task SetupBeamable()
         {
+            
+            _beamContext01 = BeamContext.ForPlayer("MyPlayer01");
+            await _beamContext01.OnReady;
+            
+            _beamContext01.Api.GroupsService.Subscribe( groupsView =>
+            {
+                _groupsView01 = groupsView;
+
+                Debug.Log("GroupsService01.Subscribe 1: " + _groupsView01.Groups.Count);
+
+            });
+
             _beamContext = BeamContext.Default;
             await _beamContext.OnReady;
             
@@ -55,6 +71,7 @@ public class Groups : MonoBehaviour
                 Debug.Log("GroupsService.Subscribe 1: " + _groupsView.Groups.Count);
 
             });
+            
         }
 
         private void SetupUIListeners()
@@ -136,6 +153,23 @@ public class Groups : MonoBehaviour
             return new EmptyResponse();
         }
         
+        public async Task<EmptyResponse> LeaveGroupsGuest()
+        {
+            // Leave any existing groups
+            foreach(var group in _groupsView01.Groups)
+            {
+                var result = await _beamContext01.Api.GroupsService.LeaveGroup(group.Group.id);
+            }
+            
+            // HACK: Force refresh here (0.10.1)
+            // Wait (arbitrary milliseconds) for refresh to complete 
+            _beamContext01.Api.GroupsService.Subscribable.ForceRefresh();
+            await Task.Delay(300); 
+            
+            
+            return new EmptyResponse();
+        }
+        
         private void CheckFields(string value)
         {
             var allFieldsCompleted = !string.IsNullOrEmpty(groupNameInput.text) &&
@@ -143,6 +177,29 @@ public class Groups : MonoBehaviour
                                      !string.IsNullOrEmpty(maxMembersInput.text);
 
             createGroupButton.interactable = allFieldsCompleted;
+        }
+        
+        private async Task CreateGuestsGroup()
+        {
+            if (_beamContext01 == null)
+            {
+                Debug.LogError("beamContext01 is not initialized.");
+                return;
+            }
+            
+            try
+            {
+                await LeaveGroupsGuest();
+                
+                var groupCreateRequest = new GroupCreateRequest("groupName", "tag", "restricted", 0, 30);
+                await _beamContext01.Api.GroupsService.CreateGroup(groupCreateRequest);
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw;
+            }
         }
       
     }
