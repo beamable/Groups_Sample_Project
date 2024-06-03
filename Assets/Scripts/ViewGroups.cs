@@ -50,7 +50,7 @@ public class ViewGroups : MonoBehaviour
         {
             try
             {
-                var groupSearchResponse = await _beamContext.Api.GroupsService.Search(searchQuery, new List<string> { "open", "closed", "restricted" });
+                var groupSearchResponse = await _beamContext.Api.GroupsService.Search(searchQuery, new List<string> { "open", "closed" });
                 DisplayGroups(groupSearchResponse.groups);
             }
             catch (Exception e)
