@@ -368,8 +368,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9aead762f7712834ba980f12f10a3330, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groupName: {fileID: 1131854861}
-  members: {fileID: 364418229}
+  groupNameText: {fileID: 1131854861}
+  groupMembersText: {fileID: 364418229}
 --- !u!114 &473092845
 MonoBehaviour:
   m_ObjectHideFlags: 0

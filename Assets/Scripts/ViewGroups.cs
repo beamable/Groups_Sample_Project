@@ -68,7 +68,7 @@ public class ViewGroups : MonoBehaviour
         
         private void DisplayGroups(List<Group> groups)
         {
-            int count = 1;
+            var count = 1;
             foreach (var group in groups)
             {
                 var button = Instantiate(groupButtonPrefab, groupsListContent);
@@ -85,7 +85,7 @@ public class ViewGroups : MonoBehaviour
         
         private void OnGroupClick(Group group)
         {
-            PlayerPrefs.SetString("SelectedGroupName", group.name);
+            PlayerPrefs.SetString("SelectedGroupId", group.id.ToString());
             SceneManager.LoadScene("GroupDetails");
         }
 
