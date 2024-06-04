@@ -213,7 +213,7 @@ public class CreateGroups : MonoBehaviour
             {
                 await LeaveGroupsGuest();
                 
-                var groupCreateRequest = new GroupCreateRequest("groupName1", "tag", "restricted", 0, 30);
+                var groupCreateRequest = new GroupCreateRequest("groupName1", "tag", "open", 0, 30);
                 await _beamContext01.Api.GroupsService.CreateGroup(groupCreateRequest);
 
             }

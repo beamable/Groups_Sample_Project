@@ -18,7 +18,7 @@ using Update = Unity.VisualScripting.Update;
 public class ViewGroups : MonoBehaviour
 {
         private BeamContext _beamContext;
-        
+        [SerializeField] private TMP_InputField searchInput;
         [SerializeField]
         private TMP_Text groupsListText;
         
@@ -28,6 +28,7 @@ public class ViewGroups : MonoBehaviour
         protected async void Start()
         {
             await SetupBeamable();
+            searchInput.onValueChanged.AddListener(OnSearchValueChanged);
         }
 
         private async Task SetupBeamable()
@@ -39,19 +40,17 @@ public class ViewGroups : MonoBehaviour
             {
                 _groupsView = groupsView;
                 
-                await FetchAndDisplayGroups();
+                await FetchAndDisplayGroups("");
                 Debug.Log("GroupsService.Subscribe 1: " + _groupsView.Groups.Count);
 
             });
         }
         
-        private async Task FetchAndDisplayGroups()
+        private async Task FetchAndDisplayGroups(string searchQuery)
         {
             try
             {
-                // Perform a group search to get all available groups
-                var groupSearchResponse = await _beamContext.Api.GroupsService.Search("", new List<string> { "open", "closed", "restricted" });
-
+                var groupSearchResponse = await _beamContext.Api.GroupsService.Search(searchQuery, new List<string> { "open", "closed" });
                 DisplayGroups(groupSearchResponse.groups);
             }
             catch (Exception e)
@@ -71,6 +70,9 @@ public class ViewGroups : MonoBehaviour
             }
         }
 
-
+        public async void OnSearchValueChanged(string searchText)
+        {
+            await FetchAndDisplayGroups(searchText);
+        }
 
     }
