@@ -10,14 +10,15 @@ This project is focused on implementing a group management feature for players.
 
 - **As a player, I should be able to create a new group, give it a name, and decide if it is private (not listed in search), open (anyone can apply to join), closed (players must receive invites).**
 - **As a player, I can see a list of all groups. The new group I created will be in the list.**
+- **As a player, I can search for groups by name.**
 
 ### In Progress
 
-- **As a player, I can search for groups by name.**
+- **As a player, I can see a list of all the players in the group.**
 
 ### Next
 
-- **As a player, I can see a list of all the players in the group.**
+- 
 
 ### To Do
 
