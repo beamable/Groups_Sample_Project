@@ -1,12 +1,14 @@
 using System;
 using System.Threading.Tasks;
 using Beamable;
+using Beamable.Server.Clients;
 using TMPro;
 using UnityEngine;
 
 public class GroupDetails : MonoBehaviour
 {
     private BeamContext _beamContext;
+    private UserGroupServiceClient _userGroupServiceClient;
 
     [SerializeField]
     private TMP_Text groupNameText;
@@ -18,6 +20,7 @@ public class GroupDetails : MonoBehaviour
     {
         _beamContext = BeamContext.Default;
         await _beamContext.OnReady;
+        _userGroupServiceClient = new UserGroupServiceClient();
 
         string groupIdString = PlayerPrefs.GetString("SelectedGroupId", string.Empty);
         if (!string.IsNullOrEmpty(groupIdString) && long.TryParse(groupIdString, out var groupId))
@@ -38,7 +41,8 @@ public class GroupDetails : MonoBehaviour
 
             foreach (var member in group.members)
             {
-                groupMembersText.text += $"\n{count}. {member.gamerTag}\n";
+                var username = _userGroupServiceClient.GetUsername(member.gamerTag);
+                groupMembersText.text += $"\n{count}. {username}\n";
                 count++;
             }
         }

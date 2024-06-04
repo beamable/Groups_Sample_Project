@@ -20,6 +20,7 @@ using Update = Unity.VisualScripting.Update;
 public class ViewGroups : MonoBehaviour
 {
         private BeamContext _beamContext;
+
         [SerializeField] 
         private TMP_InputField searchInput;
         [SerializeField]
