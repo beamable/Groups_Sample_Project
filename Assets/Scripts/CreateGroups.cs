@@ -15,9 +15,13 @@ using UnityEngine.UI;
 using Update = Unity.VisualScripting.Update;
 
 [System.Serializable]
-public class Groups : MonoBehaviour
+public class CreateGroups : MonoBehaviour
 {
         private BeamContext _beamContext;
+        /*
+        This example is made with guest players
+        */
+        private BeamContext _beamContext01;
 
         [SerializeField] 
         private TMP_Dropdown groupTypeDropdown;
@@ -33,27 +37,52 @@ public class Groups : MonoBehaviour
         private TMP_Text infoText;
         
         private GroupsView _groupsView = null;
-
-
+        private GroupsView _groupsView01 = null;
+        
+        private TaskCompletionSource<bool> _groupsView01Ready = new TaskCompletionSource<bool>();
+        private TaskCompletionSource<bool> _groupsViewReady = new TaskCompletionSource<bool>();
+        private bool _groupsView01ReadySet = false;
+        private bool _groupsViewReadySet = false;
+        
         protected async void  Start()
         {
             await SetupBeamable();
             SetupUIListeners();
-            
+            await CreateGuestsGroup();
+
             createGroupButton.interactable = false;
         }
 
         private async Task SetupBeamable()
         {
-            _beamContext = await BeamContext.Default.Instance;
+            _beamContext01 = BeamContext.ForPlayer("MyPlayer01");
+            await _beamContext01.OnReady;
             
+            _beamContext01.Api.GroupsService.Subscribe(groupsView =>
+            {
+                _groupsView01 = groupsView;
+                Debug.Log("GroupsService01.Subscribe 1: " + _groupsView01.Groups.Count);
+                if (!_groupsView01ReadySet)
+                {
+                    _groupsView01Ready.SetResult(true);
+                    _groupsView01ReadySet = true;
+                }
+            });
+            
+
+            
+            _beamContext = await BeamContext.Default.Instance;
             _beamContext.Api.GroupsService.Subscribe(groupsView =>
             {
                 _groupsView = groupsView;
-
                 Debug.Log("GroupsService.Subscribe 1: " + _groupsView.Groups.Count);
-
+                if (!_groupsViewReadySet)
+                {
+                    _groupsViewReady.SetResult(true);
+                    _groupsViewReadySet = true;
+                }
             });
+            await Task.WhenAll(_groupsView01Ready.Task, _groupsViewReady.Task);
         }
 
         private void SetupUIListeners()
@@ -120,17 +149,45 @@ public class Groups : MonoBehaviour
         
         public async Task<EmptyResponse> LeaveGroups()
         {
+
             // Leave any existing groups
             foreach(var group in _groupsView.Groups)
             {
+                
                 var result = await _beamContext.Api.GroupsService.LeaveGroup(group.Group.id);
             }
-            
+            await Task.Delay(500); 
+
             // HACK: Force refresh here (0.10.1)
             // Wait (arbitrary milliseconds) for refresh to complete 
             _beamContext.Api.GroupsService.Subscribable.ForceRefresh();
             await Task.Delay(300); 
             
+            
+            return new EmptyResponse();
+        }
+        
+        public async Task<EmptyResponse> LeaveGroupsGuest()
+        {
+            Debug.Log("Here0");
+                // Leave any existing groups
+                foreach (var group in _groupsView01.Groups)
+                {
+                    Debug.Log("Here1");
+
+                    var result = await _beamContext01.Api.GroupsService.LeaveGroup(group.Group.id);
+                }
+            
+                Debug.Log("Here2");
+
+            // HACK: Force refresh here (0.10.1)
+            // Wait (arbitrary milliseconds) for refresh to complete 
+            _beamContext01.Api.GroupsService.Subscribable.ForceRefresh();
+            Debug.Log("Here3");
+
+            await Task.Delay(300); 
+            Debug.Log("Here4");
+
             
             return new EmptyResponse();
         }
@@ -142,6 +199,29 @@ public class Groups : MonoBehaviour
                                      !string.IsNullOrEmpty(maxMembersInput.text);
 
             createGroupButton.interactable = allFieldsCompleted;
+        }
+        
+        private async Task CreateGuestsGroup()
+        {
+            if (_beamContext01 == null)
+            {
+                Debug.LogError("beamContext01 is not initialized.");
+                return;
+            }
+            
+            try
+            {
+                await LeaveGroupsGuest();
+                
+                var groupCreateRequest = new GroupCreateRequest("groupName1", "tag", "restricted", 0, 30);
+                await _beamContext01.Api.GroupsService.CreateGroup(groupCreateRequest);
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw;
+            }
         }
       
     }
