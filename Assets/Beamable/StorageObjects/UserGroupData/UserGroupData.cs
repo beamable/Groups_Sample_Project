@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using Beamable.Common;
+using Beamable.Common.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -48,5 +52,96 @@ namespace Beamable.Server
 			this IStorageObjectConnectionProvider provider)
 			where TCollection : StorageDocument
 			=> provider.GetCollection<UserGroupData, TCollection>();
+		
+		
+			/// <summary>
+		/// Updates the document under the given ID using values from the <see cref="updatedData"/> parameter.
+		/// </summary>
+		/// <returns>True if at least one document was affected. False otherwise.</returns>
+		public static async Promise<bool> Update<T>(this IStorageObjectConnectionProvider provider, string id,
+			T updatedData) where T : StorageDocument, ISetStorageDocument<T>
+		{
+			var collection = await provider.GetCollection<UserGroupData, T>();
+			var documentToUpdate = await provider.GetById<T>(id);
+			if (documentToUpdate == null) 
+				return false;
+
+			documentToUpdate.Set(updatedData);
+			var result = await collection.ReplaceOneAsync(provider.GetFilterById<T>(id), documentToUpdate);
+			return result.ModifiedCount > 0;
+		}
+
+		/// <summary>
+		/// Gets all objects of given type from the database
+		/// </summary>
+		public static async Promise<List<T>> GetAll<T>(this IStorageObjectConnectionProvider provider)
+			where T : StorageDocument
+		{
+			var collection = await provider.GetCollection<UserGroupData, T>();
+			return collection.Find(data => true).ToList();
+		}
+
+		/// <summary>
+		/// Gets an object of given type and id.
+		/// </summary>
+		public static async Promise<T> GetById<T>(this IStorageObjectConnectionProvider provider, string id)
+			where T : StorageDocument
+		{
+			var collection = await provider.GetCollection<UserGroupData, T>();
+			var search = await collection.FindAsync(provider.GetFilterById<T>(id));
+			return search.FirstOrDefault();
+		}
+
+		/// <summary>
+		/// Gets an object of given type by field name.
+		/// </summary>
+		public static async Promise<T> GetByFieldName<T, TValue>(this IStorageObjectConnectionProvider provider,
+			string field, TValue value) where T : StorageDocument
+		{
+			var collection = await provider.GetCollection<UserGroupData, T>();
+			var search = await collection.FindAsync(provider.GetFilterByField<T, TValue>(field, value));
+			return search.FirstOrDefault();
+		}
+
+		/// <summary>
+		/// Gets all object of given type by field name.
+		/// </summary>
+		public static async Promise<List<T>> GetAllByFieldName<T, TValue>(
+			this IStorageObjectConnectionProvider provider, Expression<Func<T, TValue>> field,
+			IEnumerable<TValue> values) where T : StorageDocument
+		{
+			var collection = await provider.GetCollection<UserGroupData, T>();
+			var search = await collection.FindAsync(provider.GetAllFilterByField(field, values));
+			return search.ToList();
+		}
+
+		/// <summary>
+		/// Gets a MongoDB ID filter for a given <see cref="StorageDocument"/>
+		/// </summary>
+		/// <typeparam name="T">A <see cref="StorageDocument"/> derived type you want to filter.</typeparam>
+		private static FilterDefinition<T> GetFilterById<T>(this IStorageObjectConnectionProvider provider, string id)
+			where T : StorageDocument
+			=> Builders<T>.Filter.Eq("_id", new ObjectId(id));
+
+		/// <summary>
+		/// Gets a MongoDB field filter for a given <see cref="StorageDocument"/>
+		/// </summary>
+		/// <typeparam name="T">A <see cref="StorageDocument"/> derived type you want to filter.</typeparam>
+		/// <typeparam name="TValue"></typeparam>
+		private static FilterDefinition<T> GetFilterByField<T, TValue>(this IStorageObjectConnectionProvider provider,
+			string field, TValue value) where T : StorageDocument
+			=> Builders<T>.Filter.Eq(field, value);
+
+		/// <summary>
+		/// Gets all MongoDB field filter for a given <see cref="StorageDocument"/>
+		/// </summary>
+		/// <typeparam name="T">A <see cref="StorageDocument"/> derived type you want to filter.</typeparam>
+		/// <typeparam name="TValue"></typeparam>
+		private static FilterDefinition<T> GetAllFilterByField<T, TValue>(
+			this IStorageObjectConnectionProvider provider, Expression<Func<T, TValue>> field,
+			IEnumerable<TValue> values) where T : StorageDocument
+			=> Builders<T>.Filter.In(field, values);
 	}
+	
+	
 }

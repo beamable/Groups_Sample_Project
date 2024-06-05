@@ -16,7 +16,7 @@ public class CreateGroups : MonoBehaviour
         This example is made with guest players
         */
         private BeamContext _beamContext01;
-        private UserGroupServiceClient _userGroupServiceClient;
+        private UserServiceClient _userService;
 
         [SerializeField] 
         private TMP_InputField usernameInput;
@@ -47,7 +47,7 @@ public class CreateGroups : MonoBehaviour
             SetupUIListeners();
             await CreateGuestsGroup();
 
-            _userGroupServiceClient = _beamContext.Microservices().UserGroupService();
+            _userService = new UserServiceClient();
 
             createGroupButton.interactable = false;
         }
@@ -125,19 +125,19 @@ public class CreateGroups : MonoBehaviour
         {
             try
             {
-                if (_userGroupServiceClient == null)
+                if (_userService == null)
                 {
-                    Debug.LogError("_userGroupServiceClient is not initialized.");
+                    Debug.LogError("_userService is not initialized.");
                     return;
                 }
                 var account = _beamContext.Accounts.Current;
                 /*var groupCreateRequest = new GroupCreateRequest(groupName, groupTag, groupType, minMembers, maxMembers);
                 await _beamContext.Api.GroupsService.CreateGroup(groupCreateRequest);*/
 
-                await _beamContext.Microservices().UserGroupService().SaveUser(account.GamerTag, usernameInput.text);
                 /*
-                await _userGroupServiceClient.Test();
+                await _userService.SaveUser(account.GamerTag, usernameInput.text);
                 */
+                await _userService.Test(account.GamerTag, usernameInput.text);
 
                 infoText.text = "Group created successfully!";
             }
@@ -152,7 +152,9 @@ public class CreateGroups : MonoBehaviour
 
         public async void CreateGroup()
         {
+            /*
             await LeaveGroups();
+            */
             
             var generatedTag = GenerateTag(groupNameInput.text);
             var type = GetDropdownValue();
