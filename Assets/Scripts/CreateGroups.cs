@@ -72,6 +72,8 @@ public class CreateGroups : MonoBehaviour
             
             _beamContext = BeamContext.Default;
             await _beamContext.OnReady;
+            await _beamContext.Accounts.OnReady;
+
             _beamContext.Api.GroupsService.Subscribe(groupsView =>
             {
                 _groupsView = groupsView;
@@ -131,13 +133,13 @@ public class CreateGroups : MonoBehaviour
                     return;
                 }
                 var account = _beamContext.Accounts.Current;
-                /*var groupCreateRequest = new GroupCreateRequest(groupName, groupTag, groupType, minMembers, maxMembers);
-                await _beamContext.Api.GroupsService.CreateGroup(groupCreateRequest);*/
+                
+                var groupCreateRequest = new GroupCreateRequest(groupName, groupTag, groupType, minMembers, maxMembers);
+                await _beamContext.Api.GroupsService.CreateGroup(groupCreateRequest);
 
-                /*
-                await _userService.SaveUser(account.GamerTag, usernameInput.text);
-                */
-                await _userService.Test(account.GamerTag, usernameInput.text);
+                
+                await _userService.SetPlayerAvatarName(account.GamerTag, usernameInput.text);
+                
 
                 infoText.text = "Group created successfully!";
             }
