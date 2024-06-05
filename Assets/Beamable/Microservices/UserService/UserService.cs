@@ -15,17 +15,24 @@ namespace Beamable.Microservices
 	public class UserService : Microservice
 	{
 		[ClientCallable]
-		public async Promise<Response<bool>> CheckForPlayerAvatarName(long gamerTag)
+		public async Promise<Response<string>> GetPlayerAvatarName(long gamerTag)
 		{
 			try
 			{
 				var playerData = await Storage.GetByFieldName<PlayerData, long>("gamerTag", gamerTag);
-				return new Response<bool>(!string.IsNullOrEmpty(playerData?.avatarName));
+				if (playerData != null && !string.IsNullOrEmpty(playerData.avatarName))
+				{
+					return new Response<string>(playerData.avatarName);
+				}
+				else
+				{
+					return new Response<string>("Avatar name not found");
+				}
 			}
 			catch (Exception e)
 			{
 				BeamableLogger.LogError(e);
-				return new Response<bool>(false);
+				return new Response<string>(e.Message);
 			}
 		}
 		

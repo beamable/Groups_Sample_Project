@@ -8,9 +8,7 @@ using UnityEngine;
 public class GroupDetails : MonoBehaviour
 {
     private BeamContext _beamContext;
-    /*
-    private UserGroupServiceClient _userGroupServiceClient;
-    */
+    private UserServiceClient _userService;
 
     [SerializeField]
     private TMP_Text groupNameText;
@@ -22,6 +20,7 @@ public class GroupDetails : MonoBehaviour
     {
         _beamContext = BeamContext.Default;
         await _beamContext.OnReady;
+        _userService = new UserServiceClient();
         if (_beamContext == null)
         {
             Debug.LogError("_beamContext is not initialized.");
@@ -52,10 +51,9 @@ public class GroupDetails : MonoBehaviour
 
             foreach (var member in group.members)
             {
-                /*
-                var username = _userGroupServiceClient.GetUsername(member.gamerTag);
-                */
-                groupMembersText.text += $"\n{count}. {member.gamerTag}\n";
+                var username = await _userService.GetPlayerAvatarName(member.gamerTag);
+                
+                groupMembersText.text += $"\n{count}. {username.data}\n";
                 count++;
             }
         }

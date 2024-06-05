@@ -32,15 +32,15 @@ namespace Beamable.Server.Clients
         }
         
         /// <summary>
-        /// Call the CheckForPlayerAvatarName method on the UserService microservice
-        /// <see cref="Beamable.Microservices.UserService.CheckForPlayerAvatarName"/>
+        /// Call the GetPlayerAvatarName method on the UserService microservice
+        /// <see cref="Beamable.Microservices.UserService.GetPlayerAvatarName"/>
         /// </summary>
-        public Beamable.Common.Promise<Beamable.Common.Utils.Response<bool>> CheckForPlayerAvatarName(long gamerTag)
+        public Beamable.Common.Promise<Beamable.Common.Utils.Response<string>> GetPlayerAvatarName(long gamerTag)
         {
             object raw_gamerTag = gamerTag;
             System.Collections.Generic.Dictionary<string, object> serializedFields = new System.Collections.Generic.Dictionary<string, object>();
             serializedFields.Add("gamerTag", raw_gamerTag);
-            return this.Request<Beamable.Common.Utils.Response<bool>>("UserService", "CheckForPlayerAvatarName", serializedFields);
+            return this.Request<Beamable.Common.Utils.Response<string>>("UserService", "GetPlayerAvatarName", serializedFields);
         }
         
         /// <summary>
