@@ -11,14 +11,15 @@ This project is focused on implementing a group management feature for players.
 - **As a player, I should be able to create a new group, give it a name, and decide if it is private (not listed in search), open (anyone can apply to join), closed (players must receive invites).**
 - **As a player, I can see a list of all groups. The new group I created will be in the list.**
 - **As a player, I can search for groups by name.**
+- **As a player, I can see a list of all the players in the group.**
 
 ### In Progress
 
-- **As a player, I can see a list of all the players in the group.**
+- **As a player, if I am the group leader, I can create another chat room and give it a name.**
 
 ### Next
 
-- **As a player, if I am the group leader, I can create another chat room and give it a name.**
+- **As a player who is in a group, I can add messages to the group chat and read messages from other players who leave messages in the group chat in real time.**
 
 ### To Do
 
@@ -28,7 +29,6 @@ This project is focused on implementing a group management feature for players.
 - **As a player, if I am the leader, I can invite someone to the group.**
 - **As a player, if I am invited to a group, it appears as a pop-up the next time they log in. They can decide to join or ignore the invite.**
 - **As a player, if I am in a group, I can view the default group chat and any history of the chat that is available.**
-- **As a player who is in a group, I can add messages to the group chat and read messages from other players who leave messages in the group chat in real time.**
 - **As a player, I can join other chat rooms, view the message history, and leave messages.**
 - **As a player, if I am the group leader, I can delete chat rooms I’ve created.**
 - **As a player, I can choose to get push notifications about new messages in the chat room. I can turn this on or off per chat room.**
