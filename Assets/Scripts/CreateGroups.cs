@@ -1,18 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Beamable;
-using Beamable.Api.Groups;
 using Beamable.Common.Api;
 using Beamable.Common.Api.Groups;
+using Beamable.Server.Clients;
 using UnityEngine;
-using Beamable.Experimental.Api.Chat;
 using TMPro;
-using UnityEngine.Events;
-using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
-using Update = Unity.VisualScripting.Update;
 
 [System.Serializable]
 public class CreateGroups : MonoBehaviour
@@ -22,7 +16,10 @@ public class CreateGroups : MonoBehaviour
         This example is made with guest players
         */
         private BeamContext _beamContext01;
+        private UserServiceClient _userService;
 
+        [SerializeField] 
+        private TMP_InputField usernameInput;
         [SerializeField] 
         private TMP_Dropdown groupTypeDropdown;
         [SerializeField]
@@ -50,6 +47,8 @@ public class CreateGroups : MonoBehaviour
             SetupUIListeners();
             await CreateGuestsGroup();
 
+            _userService = new UserServiceClient();
+
             createGroupButton.interactable = false;
         }
 
@@ -71,7 +70,10 @@ public class CreateGroups : MonoBehaviour
             
 
             
-            _beamContext = await BeamContext.Default.Instance;
+            _beamContext = BeamContext.Default;
+            await _beamContext.OnReady;
+            await _beamContext.Accounts.OnReady;
+
             _beamContext.Api.GroupsService.Subscribe(groupsView =>
             {
                 _groupsView = groupsView;
@@ -125,12 +127,25 @@ public class CreateGroups : MonoBehaviour
         {
             try
             {
+                if (_userService == null)
+                {
+                    Debug.LogError("_userService is not initialized.");
+                    return;
+                }
+                var account = _beamContext.Accounts.Current;
+                
                 var groupCreateRequest = new GroupCreateRequest(groupName, groupTag, groupType, minMembers, maxMembers);
                 await _beamContext.Api.GroupsService.CreateGroup(groupCreateRequest);
+
+                
+                await _userService.SetPlayerAvatarName(account.GamerTag, usernameInput.text);
+                
+
                 infoText.text = "Group created successfully!";
             }
             catch (Exception e)
             {
+                Debug.LogError("error " + e.Message);
                 Console.WriteLine(e.Message);
                 throw;
             }
@@ -169,24 +184,16 @@ public class CreateGroups : MonoBehaviour
         
         public async Task<EmptyResponse> LeaveGroupsGuest()
         {
-            Debug.Log("Here0");
                 // Leave any existing groups
                 foreach (var group in _groupsView01.Groups)
                 {
-                    Debug.Log("Here1");
-
                     var result = await _beamContext01.Api.GroupsService.LeaveGroup(group.Group.id);
                 }
-            
-                Debug.Log("Here2");
-
             // HACK: Force refresh here (0.10.1)
             // Wait (arbitrary milliseconds) for refresh to complete 
             _beamContext01.Api.GroupsService.Subscribable.ForceRefresh();
-            Debug.Log("Here3");
 
             await Task.Delay(300); 
-            Debug.Log("Here4");
 
             
             return new EmptyResponse();

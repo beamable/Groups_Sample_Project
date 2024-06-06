@@ -9,8 +9,10 @@ using Beamable.Common.Api.Groups;
 using UnityEngine;
 using Beamable.Experimental.Api.Chat;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine.Events;
 using UnityEngine.PlayerLoop;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Update = Unity.VisualScripting.Update;
 
@@ -18,9 +20,15 @@ using Update = Unity.VisualScripting.Update;
 public class ViewGroups : MonoBehaviour
 {
         private BeamContext _beamContext;
-        [SerializeField] private TMP_InputField searchInput;
+
+        [SerializeField] 
+        private TMP_InputField searchInput;
         [SerializeField]
         private TMP_Text groupsListText;
+        [SerializeField]
+        private Button groupButtonPrefab;
+        [SerializeField]
+        private Transform groupsListContent;
         
         private GroupsView _groupsView = null;
 
@@ -61,11 +69,12 @@ public class ViewGroups : MonoBehaviour
         
         private void DisplayGroups(List<Group> groups)
         {
-            groupsListText.text = "Groups:\n";
-            int count = 1;
-            foreach (var groupView in groups)
+            var count = 1;
+            foreach (var group in groups)
             {
-                groupsListText.text += $"\n{count}. {groupView.name}\n";
+                var button = Instantiate(groupButtonPrefab, groupsListContent);
+                button.GetComponentInChildren<TextMeshProUGUI>().text = $"{count}. {group.name}";
+                button.onClick.AddListener(() => OnGroupClick(group));
                 count++;
             }
         }
@@ -73,6 +82,12 @@ public class ViewGroups : MonoBehaviour
         public async void OnSearchValueChanged(string searchText)
         {
             await FetchAndDisplayGroups(searchText);
+        }
+        
+        private void OnGroupClick(Group group)
+        {
+            PlayerPrefs.SetString("SelectedGroupId", group.id.ToString());
+            SceneManager.LoadScene("GroupDetails");
         }
 
     }
