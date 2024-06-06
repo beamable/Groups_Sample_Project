@@ -1,42 +1,49 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Beamable;
+using Beamable.Experimental.Api.Chat;
 using Beamable.Server.Clients;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GroupDetails : MonoBehaviour
 {
     private BeamContext _beamContext;
     private UserServiceClient _userService;
-
+    private ChatService _chatService;
+    
     [SerializeField]
     private TMP_Text groupNameText;
-
     [SerializeField]
     private TMP_Text groupMembersText;
+    [SerializeField] 
+    private TMP_InputField chatNameInput;
+    [SerializeField] 
+    private Button startChatButton;
 
     private async void Start()
     {
         _beamContext = BeamContext.Default;
         await _beamContext.OnReady;
         _userService = new UserServiceClient();
-        if (_beamContext == null)
-        {
-            Debug.LogError("_beamContext is not initialized.");
-        }
-        else
-        {
-            /*
-            _userGroupServiceClient = _beamContext.Microservices().UserGroupService();
-        */
-        }
+        startChatButton.interactable = false;
+        _chatService = _beamContext.ServiceProvider.GetService<ChatService>();
+        
+        SetupUIListeners();
 
         string groupIdString = PlayerPrefs.GetString("SelectedGroupId", string.Empty);
         if (!string.IsNullOrEmpty(groupIdString) && long.TryParse(groupIdString, out var groupId))
         {
             await DisplayGroupDetails(groupId);
         }
+    }
+    
+    private void SetupUIListeners()
+    {
+        chatNameInput.onValueChanged.AddListener(CheckFields);
     }
 
     private async Task DisplayGroupDetails(long groupId)
@@ -61,5 +68,33 @@ public class GroupDetails : MonoBehaviour
         {
             Debug.LogError($"Error fetching group details: {e.Message}");
         }
+    }
+    
+    private void CheckFields(string value)
+    {
+        var allFieldsCompleted = !string.IsNullOrEmpty(chatNameInput.text);
+
+        startChatButton.interactable = allFieldsCompleted;
+    }
+    
+    private async Task StartChat(string roomName)
+    {
+        try
+        {
+            await _chatService.CreateRoom(roomName, false, new List<long> { _beamContext.PlayerId });
+            PlayerPrefs.SetString("SelectedRoomName", roomName);
+            SceneManager.LoadScene("ChatRoom"); 
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Error creating chat room: {e.Message}");
+        }
+    }
+
+    public async void StartChatButton()
+    {
+        var roomName = chatNameInput.text;
+        await StartChat(roomName);
+
     }
 }
