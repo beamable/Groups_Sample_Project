@@ -154,9 +154,7 @@ public class CreateGroups : MonoBehaviour
 
         public async void CreateGroup()
         {
-            /*
             await LeaveGroups();
-            */
             
             var generatedTag = GenerateTag(groupNameInput.text);
             var type = GetDropdownValue();
