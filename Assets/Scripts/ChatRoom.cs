@@ -61,11 +61,8 @@ public class ChatRoom : MonoBehaviour
     
     private void HandleChatViewUpdateForGuest(ChatView chatView)
     {
-        Debug.Log(_roomName);
         ChatView01 = chatView;
         _currentRoom01 = _roomName == "General" ? ChatView01.GuildRooms.LastOrDefault() : ChatView01.roomHandles.Find(x => x.Name == _roomName);
-        
-        Debug.Log(_currentRoom01.Name);
         
         if (_currentRoom01 != null)
         { 
@@ -93,7 +90,6 @@ public class ChatRoom : MonoBehaviour
         var username = await _userService.GetPlayerAvatarName(message.gamerTag);
         string roomMessage = $"{username.data}: {message.content}";
         chatLogText.text += $"{roomMessage}\n";
-        Debug.Log($"Message received: {roomMessage}");
     }
     
     private async void LoadChatHistory()
@@ -120,14 +116,11 @@ public class ChatRoom : MonoBehaviour
     
     private IEnumerator SendGuestMessageAfterDelay(float delay, string message)
     {
-        Debug.Log("Here0");
         yield return new WaitForSeconds(delay);
-        Debug.Log("Here1");
 
         if (_currentRoom01 != null)
         {
             _currentRoom01.SendMessage(message);
-            Debug.Log("Guest message sent: " + message);
         }
     }
 }

@@ -38,7 +38,6 @@ public class ViewGroups : MonoBehaviour
                 _groupsView = groupsView;
                 
                 await FetchAndDisplayGroups("");
-                Debug.Log("GroupsService.Subscribe 1: " + _groupsView.Groups.Count);
 
             });
         }

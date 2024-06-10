@@ -62,7 +62,6 @@ public class ViewRooms: MonoBehaviour
                         count++;
                     }
 
-                    Debug.Log(room.Name);
                     var button = Instantiate(roomButtonPrefab, roomListContent);
                     button.GetComponentInChildren<TextMeshProUGUI>().text = $"{count - 1}. {roomName}";
                     button.onClick.AddListener(() => OnGroupClick(roomName));
