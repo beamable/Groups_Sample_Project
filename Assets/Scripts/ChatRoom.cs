@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Beamable;
 using Beamable.Experimental.Api.Chat;
 using Beamable.Server.Clients;
@@ -53,28 +54,22 @@ public class ChatRoom : MonoBehaviour
     private void HandleChatViewUpdate(ChatView chatView)
     {
         ChatView = chatView;
-        _currentRoom = ChatView.roomHandles.Find(x => x.Name == _roomName);
-        
+        _currentRoom = _roomName == "General" ? ChatView.GuildRooms.LastOrDefault() : ChatView.roomHandles.Find(x => x.Name == _roomName);
+
         _currentRoom?.Subscribe().Then(_ => HandleGroupChatRoomUpdate(_currentRoom));
     }
     
     private void HandleChatViewUpdateForGuest(ChatView chatView)
     {
+        Debug.Log(_roomName);
         ChatView01 = chatView;
-        _currentRoom01 = ChatView01.roomHandles.Find(x =>
-        {
-            Debug.Log("Room Name " + x.Name);
-            return x.Name == _roomName;
-        });
+        _currentRoom01 = _roomName == "General" ? ChatView01.GuildRooms.LastOrDefault() : ChatView01.roomHandles.Find(x => x.Name == _roomName);
         
         Debug.Log(_currentRoom01.Name);
         
         if (_currentRoom01 != null)
-        {
-            _currentRoom01.Subscribe().Then(_ =>
-            {
-                StartCoroutine(SendGuestMessageAfterDelay(5f, "Hello from guest player!"));
-            });
+        { 
+            StartCoroutine(SendGuestMessageAfterDelay(5f, "Hello from guest player!"));
         }
         else
         {

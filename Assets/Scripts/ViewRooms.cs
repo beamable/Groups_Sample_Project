@@ -65,16 +65,16 @@ public class ViewRooms: MonoBehaviour
                     Debug.Log(room.Name);
                     var button = Instantiate(roomButtonPrefab, roomListContent);
                     button.GetComponentInChildren<TextMeshProUGUI>().text = $"{count - 1}. {roomName}";
-                    button.onClick.AddListener(() => OnGroupClick(room));
+                    button.onClick.AddListener(() => OnGroupClick(roomName));
                 }
                 count++;
             }
         }
 
         
-        private void OnGroupClick(RoomHandle room)
+        private void OnGroupClick(string roomName)
         {
-            PlayerPrefs.SetString("SelectedRoomName", room.Name);
+            PlayerPrefs.SetString("SelectedRoomName", roomName);
             SceneManager.LoadScene("ChatRoom");
         }
     }

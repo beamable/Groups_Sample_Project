@@ -885,6 +885,7 @@ GameObject:
   - component: {fileID: 1144103960}
   - component: {fileID: 1144103959}
   - component: {fileID: 1144103958}
+  - component: {fileID: 1144103962}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -975,6 +976,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1144103962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1144103957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 745d0a7824d5f2547830ffbb43225ab7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomButtonPrefab: {fileID: 8610928602424259785, guid: 251da5814d40d6c44842831c767f9acc, type: 3}
+  roomListContent: {fileID: 2073050183}
 --- !u!1 &1235685826
 GameObject:
   m_ObjectHideFlags: 0
@@ -1450,7 +1465,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000024252136}
+  m_AnchoredPosition: {x: 0, y: -0.000015258789}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2073050184
