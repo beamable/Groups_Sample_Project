@@ -36,17 +36,19 @@ namespace Managers
             _isSubscribed = true;
         }
 
-        public async Task CreateGroup(string groupName, string groupTag, string groupType, int minMembers, int maxMembers, string username)
+        public async Task<long> CreateGroup(string groupName, string groupTag, string groupType, int minMembers, int maxMembers, string username)
         {
             await _groupsViewInitialized.Task; // Wait for _groupsView to be initialized
             await LeaveGroups();
             
             var account = _beamContext.Accounts.Current;
             var groupCreateRequest = new GroupCreateRequest(groupName, groupTag, groupType, minMembers, maxMembers);
-            await _beamContext.Api.GroupsService.CreateGroup(groupCreateRequest);
+            var groupResponse = await _beamContext.Api.GroupsService.CreateGroup(groupCreateRequest);
             await _userService.SetPlayerAvatarName(account.GamerTag, username);
             
             Debug.Log("New group created: " + groupName);
+            return groupResponse.group.id;
+
         }
 
         private async Task LeaveGroups()
@@ -63,6 +65,17 @@ namespace Managers
             }
             _beamContext.Api.GroupsService.Subscribable.ForceRefresh();
             await Task.Delay(300);
+        }
+        
+        public async Task JoinGroup(long groupId, string username)
+        {
+            await _groupsViewInitialized.Task; // Wait for _groupsView to be initialized
+            
+            var account = _beamContext.Accounts.Current;
+            await _beamContext.Api.GroupsService.JoinGroup(groupId);
+            await _userService.SetPlayerAvatarName(account.GamerTag, username);
+
+            Debug.Log("Joined group: " + groupId);
         }
     }
 

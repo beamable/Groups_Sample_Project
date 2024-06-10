@@ -15,6 +15,7 @@ public class CreateGroups : MonoBehaviour
         //This example is made with guest players
         private PlayerGroupManager _mainPlayer;
         private PlayerGroupManager _guestPlayer0;
+        private PlayerGroupManager _guestPlayer1;
 
         [SerializeField] 
         private TMP_InputField usernameInput;
@@ -50,6 +51,10 @@ public class CreateGroups : MonoBehaviour
             var beamContext01 = await BeamContext.ForPlayer("MyPlayer01").Instance;
             _guestPlayer0 = new PlayerGroupManager(beamContext01);
             await _guestPlayer0.Initialize();
+            
+            var beamContext02 = await BeamContext.ForPlayer("MyPlayer02").Instance;
+            _guestPlayer1 = new PlayerGroupManager(beamContext02);
+            await _guestPlayer1.Initialize();
         }
 
         private void SetupUIListeners()
@@ -91,8 +96,11 @@ public class CreateGroups : MonoBehaviour
             var generatedTag = GenerateTag(groupNameInput.text);
             var type = GetDropdownValue();
 
-            await _mainPlayer.CreateGroup(groupNameInput.text, generatedTag, type, int.Parse(minMembersInput.text),
+            var groupId = await _mainPlayer.CreateGroup(groupNameInput.text, generatedTag, type, int.Parse(minMembersInput.text),
                 int.Parse(maxMembersInput.text), usernameInput.text);
+            
+            await _guestPlayer1.JoinGroup(groupId, "GuestPlayer01");
+            
             infoText.text = "Group created successfully!";
         }
         
