@@ -70,6 +70,7 @@ namespace Managers
         public async Task JoinGroup(long groupId, string username)
         {
             await _groupsViewInitialized.Task; // Wait for _groupsView to be initialized
+            await LeaveGroups();
             
             var account = _beamContext.Accounts.Current;
             await _beamContext.Api.GroupsService.JoinGroup(groupId);
