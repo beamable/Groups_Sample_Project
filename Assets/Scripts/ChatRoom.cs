@@ -1,16 +1,10 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Beamable;
-using Beamable.Common;
 using Beamable.Experimental.Api.Chat;
 using Beamable.Server.Clients;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
+
 
 public class ChatRoom : MonoBehaviour
 {
