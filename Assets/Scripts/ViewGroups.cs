@@ -1,20 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Beamable;
-using Beamable.Api.Groups;
-using Beamable.Common.Api;
 using Beamable.Common.Api.Groups;
 using UnityEngine;
-using Beamable.Experimental.Api.Chat;
 using TMPro;
-using Unity.VisualScripting;
-using UnityEngine.Events;
-using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Update = Unity.VisualScripting.Update;
 
 [System.Serializable]
 public class ViewGroups : MonoBehaviour
@@ -23,8 +15,6 @@ public class ViewGroups : MonoBehaviour
 
         [SerializeField] 
         private TMP_InputField searchInput;
-        [SerializeField]
-        private TMP_Text groupsListText;
         [SerializeField]
         private Button groupButtonPrefab;
         [SerializeField]
@@ -41,8 +31,7 @@ public class ViewGroups : MonoBehaviour
 
         private async Task SetupBeamable()
         {
-            _beamContext = BeamContext.Default;
-            await _beamContext.OnReady;
+            _beamContext = await BeamContext.Default.Instance;
             
             _beamContext.Api.GroupsService.Subscribe(async groupsView =>
             {

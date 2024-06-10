@@ -12,6 +12,8 @@ using UnityEngine.UI;
 public class GroupDetails : MonoBehaviour
 {
     private BeamContext _beamContext;
+    private BeamContext _beamContext01;
+
     private UserServiceClient _userService;
     private ChatService _chatService;
     
@@ -26,8 +28,10 @@ public class GroupDetails : MonoBehaviour
 
     private async void Start()
     {
-        _beamContext = BeamContext.Default;
-        await _beamContext.OnReady;
+        _beamContext = await BeamContext.Default.Instance;
+        _beamContext01 = await BeamContext.ForPlayer("MyPlayer02").Instance;
+        await _beamContext01.Accounts.OnReady;
+        
         _userService = new UserServiceClient();
         startChatButton.interactable = false;
         _chatService = _beamContext.ServiceProvider.GetService<ChatService>();
@@ -81,7 +85,8 @@ public class GroupDetails : MonoBehaviour
     {
         try
         {
-            await _chatService.CreateRoom(roomName, false, new List<long> { _beamContext.PlayerId });
+            var guestPlayerId = _beamContext01.Accounts.Current;
+            await _chatService.CreateRoom(roomName, false, new List<long> { _beamContext.PlayerId, guestPlayerId.GamerTag });
             PlayerPrefs.SetString("SelectedRoomName", roomName);
             SceneManager.LoadScene("ChatRoom"); 
         }
