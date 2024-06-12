@@ -1204,7 +1204,7 @@ MonoBehaviour:
   editGroupButton: {fileID: 1134375408}
   createRoom: {fileID: 115949935}
   memberItemPrefab: {fileID: 3148322257433250143, guid: 4fabe633012922e4c89581fdf9ec25fe, type: 3}
-  groupMembersList: {fileID: 0}
+  groupMembersList: {fileID: 1678118482}
 --- !u!114 &473092845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1887,8 +1887,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2056137665}
   m_HandleRect: {fileID: 2056137664}
   m_Direction: 0
-  m_Value: 1
-  m_Size: 0.99999994
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2185,8 +2185,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1292621534}
   m_HandleRect: {fileID: 1292621533}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.6346666
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -3071,6 +3071,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1678118482}
   - component: {fileID: 1678118483}
+  - component: {fileID: 1678118484}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -3096,7 +3097,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 300}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1678118483
 MonoBehaviour:
@@ -3124,6 +3125,20 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1678118484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1678118481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
 --- !u!1 &1772138244
 GameObject:
   m_ObjectHideFlags: 0

@@ -42,8 +42,21 @@ public class EditGroup : MonoBehaviour
             groupNameInput.text = _group.name;
             groupSloganInput.text = _group.slogan;
             groupMotdInput.text = _group.motd;
-            groupTypeDropdown.value = _group.enrollmentType == "open" ? 0 : 1;
-        }
+            switch (_group.enrollmentType.ToLower())
+            {
+                case "open":
+                    groupTypeDropdown.value = 0;
+                    break;
+                case "restricted":
+                    groupTypeDropdown.value = 1;
+                    break;
+                case "closed":
+                    groupTypeDropdown.value = 2;
+                    break;
+                default:
+                    Debug.LogWarning($"Unknown enrollment type: {_group.enrollmentType}");
+                    break;
+            }        }
         
     }
     
