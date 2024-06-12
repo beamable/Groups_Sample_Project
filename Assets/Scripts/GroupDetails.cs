@@ -21,6 +21,10 @@ public class GroupDetails : MonoBehaviour
     
     [SerializeField]
     private TMP_Text groupNameText;
+    [SerializeField] 
+    private TMP_Text groupSloganText;
+    [SerializeField]
+    private TMP_Text groupMotdText;
     [SerializeField]
     private TMP_Text groupMembersText;
     [SerializeField] 
@@ -29,6 +33,10 @@ public class GroupDetails : MonoBehaviour
     private Button startChatButton;
     [SerializeField] 
     private Button disbandGroupButton;
+    [SerializeField] 
+    private Button editGroupButton;
+
+    [SerializeField] private GameObject createRoom;
 
 
     private async void Start()
@@ -63,6 +71,8 @@ public class GroupDetails : MonoBehaviour
             if (group != null)
             {
                 groupNameText.text = group.name;
+                groupSloganText.text = group.slogan;
+                groupMotdText.text = group.motd;
                 groupMembersText.text = "Members:\n";
 
                 if (group.members != null)
@@ -76,9 +86,11 @@ public class GroupDetails : MonoBehaviour
                     }
                 }
 
-                if ( group.canDisband)
+                if (group.canDisband)
                 {
                     disbandGroupButton.gameObject.SetActive(true);
+                    editGroupButton.gameObject.SetActive(true);
+                    createRoom.gameObject.SetActive(true);
                 }
             }
             else
@@ -149,5 +161,10 @@ public class GroupDetails : MonoBehaviour
             Console.WriteLine(e);
             throw;
         }
+    }
+    
+    public void LoadEditGroupScene()
+    {
+        SceneManager.LoadScene("EditGroup");
     }
 }
