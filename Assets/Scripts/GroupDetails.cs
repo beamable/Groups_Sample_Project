@@ -16,6 +16,8 @@ public class GroupDetails : MonoBehaviour
 
     private UserServiceClient _userService;
     private ChatService _chatService;
+
+    private string _groupIdString;
     
     [SerializeField]
     private TMP_Text groupNameText;
@@ -25,6 +27,9 @@ public class GroupDetails : MonoBehaviour
     private TMP_InputField chatNameInput;
     [SerializeField] 
     private Button startChatButton;
+    [SerializeField] 
+    private Button disbandGroupButton;
+
 
     private async void Start()
     {
@@ -38,8 +43,8 @@ public class GroupDetails : MonoBehaviour
         
         SetupUIListeners();
 
-        string groupIdString = PlayerPrefs.GetString("SelectedGroupId", string.Empty);
-        if (!string.IsNullOrEmpty(groupIdString) && long.TryParse(groupIdString, out var groupId))
+         _groupIdString = PlayerPrefs.GetString("SelectedGroupId", string.Empty);
+        if (!string.IsNullOrEmpty(_groupIdString) && long.TryParse(_groupIdString, out var groupId))
         {
             await DisplayGroupDetails(groupId);
         }
@@ -55,18 +60,33 @@ public class GroupDetails : MonoBehaviour
         try
         {
             var group = await _beamContext.Api.GroupsService.GetGroup(groupId);
-            var count = 1;
-            
-            groupNameText.text = group.name;
-            groupMembersText.text = "Members:\n";
-
-            foreach (var member in group.members)
+            if (group != null)
             {
-                var username = await _userService.GetPlayerAvatarName(member.gamerTag);
-                
-                groupMembersText.text += $"\n{count}. {username.data}\n";
-                count++;
+                groupNameText.text = group.name;
+                groupMembersText.text = "Members:\n";
+
+                if (group.members != null)
+                {
+                    var count = 1;
+                    foreach (var member in group.members)
+                    {
+                        var username = await _userService.GetPlayerAvatarName(member.gamerTag);
+                        groupMembersText.text += $"\n{count}. {username.data}\n";
+                        count++;
+                    }
+                }
+
+                if ( group.canDisband)
+                {
+                    disbandGroupButton.gameObject.SetActive(true);
+                }
             }
+            else
+            {
+                Debug.LogError("Group details are null.");
+            }
+
+
         }
         catch (Exception e)
         {
@@ -86,6 +106,7 @@ public class GroupDetails : MonoBehaviour
         try
         {
             var guestPlayerId = _beamContext01.Accounts.Current;
+            Debug.LogError(_beamContext.PlayerId + " " + guestPlayerId);
             await _chatService.CreateRoom(roomName, false, new List<long> { _beamContext.PlayerId, guestPlayerId.GamerTag });
             PlayerPrefs.SetString("SelectedRoomName", roomName);
             SceneManager.LoadScene("ChatRoom"); 
@@ -101,5 +122,32 @@ public class GroupDetails : MonoBehaviour
         var roomName = chatNameInput.text;
         await StartChat(roomName);
 
+    }
+
+    public async void DisbandGroupTrigger()
+    {
+        if (!string.IsNullOrEmpty(_groupIdString) && long.TryParse(_groupIdString, out var groupId))
+        {
+            await DisbandGroup(groupId);
+        }
+    }
+
+    private async Task DisbandGroup(long groupId)
+    {
+        try
+        {
+            var group = await _beamContext.Api.GroupsService.GetGroup(groupId);
+            if (group.canDisband)
+            {
+                await _beamContext.Api.GroupsService.DisbandGroup(groupId);
+                Debug.Log("Group disbanded successfully");
+                SceneManager.LoadScene("CreateGroup");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 }
