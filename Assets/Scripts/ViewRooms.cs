@@ -35,7 +35,6 @@ public class ViewRooms: MonoBehaviour
         private async Task SetupBeamable()
         {
             _beamContext = await BeamContext.Default.Instance;
-
         }
         
         private void GetRooms(ChatView chatView)

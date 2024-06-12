@@ -54,14 +54,34 @@ public class ChatRoom : MonoBehaviour
     private void HandleChatViewUpdate(ChatView chatView)
     {
         ChatView = chatView;
-        _currentRoom = _roomName == "General" ? ChatView.GuildRooms.LastOrDefault() : ChatView.roomHandles.Find(x => x.Name == _roomName);
+        _currentRoom = _roomName == "General" ? ChatView.GuildRooms.LastOrDefault() : ChatView.roomHandles.Find(x =>
+        {
+            Debug.Log(x.Name);
+            foreach (var player in x.Players)
+            {
+                Debug.Log(player);
+            }
+            return x.Name == _roomName;
+        });
 
         _currentRoom?.Subscribe().Then(_ => HandleGroupChatRoomUpdate(_currentRoom));
     }
     
-    private void HandleChatViewUpdateForGuest(ChatView chatView)
+    private async void HandleChatViewUpdateForGuest(ChatView chatView)
     {
         ChatView01 = chatView;
+        var roomInfos = await _chatService01.GetMyRooms();
+        if (roomInfos != null)
+        {
+            foreach (var room in roomInfos)
+            {
+                Debug.Log("Guest Player Room: " + room.name);
+            }
+        }
+        else
+        {
+            Debug.LogError("Guest Player Room Infos are null");
+        }
         _currentRoom01 = _roomName == "General" ? ChatView01.GuildRooms.LastOrDefault() : ChatView01.roomHandles.Find(x => x.Name == _roomName);
         
         if (_currentRoom01 != null)
