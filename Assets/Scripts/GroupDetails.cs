@@ -18,6 +18,7 @@ public class GroupDetails : MonoBehaviour
     private ChatService _chatService;
 
     private string _groupIdString;
+    private bool _isLeader;
     
     [SerializeField]
     private TMP_Text groupNameText;
@@ -35,8 +36,13 @@ public class GroupDetails : MonoBehaviour
     private Button disbandGroupButton;
     [SerializeField] 
     private Button editGroupButton;
-
-    [SerializeField] private GameObject createRoom;
+    [SerializeField] 
+    private GameObject createRoom;
+    [SerializeField]
+    private GameObject memberItemPrefab;
+    [SerializeField]
+    private Transform groupMembersList;
+    
 
 
     private async void Start()
@@ -73,20 +79,24 @@ public class GroupDetails : MonoBehaviour
                 groupNameText.text = group.name;
                 groupSloganText.text = group.slogan;
                 groupMotdText.text = group.motd;
-                groupMembersText.text = "Members:\n";
+                
+                _isLeader = group.canDisband;
 
                 if (group.members != null)
                 {
-                    var count = 1;
+                    foreach (Transform child in groupMembersList)
+                    {
+                        Destroy(child.gameObject);
+                    }
+                    
                     foreach (var member in group.members)
                     {
                         var username = await _userService.GetPlayerAvatarName(member.gamerTag);
-                        groupMembersText.text += $"\n{count}. {username.data}\n";
-                        count++;
+                        AddMemberItem(username.data, group.id, member.gamerTag);
                     }
                 }
 
-                if (group.canDisband)
+                if (_isLeader)
                 {
                     disbandGroupButton.gameObject.SetActive(true);
                     editGroupButton.gameObject.SetActive(true);
@@ -103,6 +113,34 @@ public class GroupDetails : MonoBehaviour
         catch (Exception e)
         {
             Debug.LogError($"Error fetching group details: {e.Message}");
+        }
+    }
+    
+    private void AddMemberItem(string username, long groupId, long gamerTag)
+    {
+        var memberItem = Instantiate(memberItemPrefab, groupMembersList);
+        var text = memberItem.GetComponentInChildren<TMP_Text>();
+        text.text = username;
+
+        var kickButton = memberItem.transform.Find("KickButton").GetComponent<Button>();
+        kickButton.gameObject.SetActive(_isLeader && gamerTag != _beamContext.PlayerId);
+        kickButton.onClick.AddListener(async () => await KickMember(groupId, gamerTag));
+    }
+
+    private async Task KickMember(long groupId, long gamerTag)
+    {
+        try
+        {
+            var response = await _beamContext.Api.GroupsService.Kick(groupId, gamerTag);
+            if (response != null)
+            {
+                Debug.Log("Member kicked successfully");
+                await DisplayGroupDetails(groupId); // Refresh the group details
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Error kicking member: {e.Message}");
         }
     }
     
