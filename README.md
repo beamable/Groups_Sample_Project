@@ -22,11 +22,11 @@ This project is focused on implementing a group management feature for players.
   
 ### Next
 
-- **As a player, I can choose to get push notifications about new messages in the chat room. I can turn this on or off per chat room.**
+- **As a player, I will be the leader of the group and have full control to edit the group or disband (delete) it.**
 
 ### To Do
 
-- **As a player, I will be the leader of the group and have full control to edit the group or disband (delete) it.**
+- **As a player, I can choose to get push notifications about new messages in the chat room. I can turn this on or off per chat room.**
 - **As a player, if I am the leader and I choose to leave, I can assign someone as the new leader.**
 - **As a player, if I am the leader, I can kick someone out of the group.**
 - **As a player, if I am the leader, I can invite someone to the group.**
