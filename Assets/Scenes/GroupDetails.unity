@@ -559,7 +559,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &115949936
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1231,8 +1231,8 @@ MonoBehaviour:
   chatNameInput: {fileID: 102930394}
   startChatButton: {fileID: 1431679970}
   disbandGroupButton: {fileID: 1191300837}
-  sloganText: {fileID: 27184126}
-  messageText: {fileID: 686158500}
+  editGroupButton: {fileID: 1134375408}
+  createRoom: {fileID: 115949935}
 --- !u!114 &473092845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2494,7 +2494,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1134375407
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2628,7 +2628,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1191300836
 RectTransform:
   m_ObjectHideFlags: 0

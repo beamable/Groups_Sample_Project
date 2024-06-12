@@ -34,9 +34,9 @@ public class GroupDetails : MonoBehaviour
     [SerializeField] 
     private Button disbandGroupButton;
     [SerializeField] 
-    private TMP_Text sloganText;
-    [SerializeField] 
-    private TMP_Text messageText;
+    private Button editGroupButton;
+
+    [SerializeField] private GameObject createRoom;
 
 
     private async void Start()
@@ -86,9 +86,11 @@ public class GroupDetails : MonoBehaviour
                     }
                 }
 
-                if ( group.canDisband)
+                if (group.canDisband)
                 {
                     disbandGroupButton.gameObject.SetActive(true);
+                    editGroupButton.gameObject.SetActive(true);
+                    createRoom.gameObject.SetActive(true);
                 }
             }
             else
