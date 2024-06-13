@@ -1,11 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Beamable;
 using Beamable.Experimental.Api.Chat;
 using Beamable.Server.Clients;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ChatRoom : MonoBehaviour
 {
@@ -148,6 +151,22 @@ public class ChatRoom : MonoBehaviour
         if (_currentRoom01 != null)
         {
             _currentRoom01.SendMessage(message);
+        }
+    }
+    
+    public void ForgetRoom()
+    {
+        if (_currentRoom != null)
+        {
+            try
+            {
+                ChatView.roomHandles.Remove(_currentRoom);
+                SceneManager.LoadScene("ChatRooms");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error forgetting room: {e.Message}");
+            }
         }
     }
 }

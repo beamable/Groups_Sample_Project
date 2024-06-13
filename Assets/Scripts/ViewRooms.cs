@@ -55,11 +55,6 @@ public class ViewRooms: MonoBehaviour
                     {
                         roomName = "General";
                     }
-                    else
-                    {
-                        // Increment the count if not the second element
-                        count++;
-                    }
 
                     var button = Instantiate(roomButtonPrefab, roomListContent);
                     button.GetComponentInChildren<TextMeshProUGUI>().text = $"{count - 1}. {roomName}";
