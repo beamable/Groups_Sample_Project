@@ -35,7 +35,6 @@ public class ViewRooms: MonoBehaviour
         private async Task SetupBeamable()
         {
             _beamContext = await BeamContext.Default.Instance;
-
         }
         
         private void GetRooms(ChatView chatView)
@@ -55,11 +54,6 @@ public class ViewRooms: MonoBehaviour
                     if (count == 2) // Change the name for the second button
                     {
                         roomName = "General";
-                    }
-                    else
-                    {
-                        // Increment the count if not the second element
-                        count++;
                     }
 
                     var button = Instantiate(roomButtonPrefab, roomListContent);

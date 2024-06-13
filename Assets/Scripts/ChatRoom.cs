@@ -1,11 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Beamable;
 using Beamable.Experimental.Api.Chat;
 using Beamable.Server.Clients;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ChatRoom : MonoBehaviour
 {
@@ -36,6 +39,9 @@ public class ChatRoom : MonoBehaviour
         _beamContext = await BeamContext.Default.Instance;
         _beamContext01 = await BeamContext.ForPlayer("MyPlayer02").Instance;
 
+        await _beamContext.Accounts.OnReady;
+        await _beamContext01.Accounts.OnReady;
+        
         _chatService = _beamContext.ServiceProvider.GetService<ChatService>();
         _chatService01 = _beamContext01.ServiceProvider.GetService<ChatService>();
         
@@ -48,20 +54,44 @@ public class ChatRoom : MonoBehaviour
         _chatService.Subscribe(HandleChatViewUpdate);
         
         _chatService01 = _beamContext01.ServiceProvider.GetService<ChatService>();
-        _chatService01.Subscribe(HandleChatViewUpdateForGuest);       
+        _chatService01.Subscribe(HandleChatViewUpdateForGuest);  
+        
+
     }
     
     private void HandleChatViewUpdate(ChatView chatView)
     {
         ChatView = chatView;
-        _currentRoom = _roomName == "General" ? ChatView.GuildRooms.LastOrDefault() : ChatView.roomHandles.Find(x => x.Name == _roomName);
+        _currentRoom = _roomName == "General" ? ChatView.GuildRooms.LastOrDefault() : ChatView.roomHandles.Find(x =>
+        {
+            Debug.Log(x.Name);
+            foreach (var player in x.Players)
+            {
+                Debug.Log(player);
+            }
+            Debug.Log("Main Player ID" + _beamContext.Accounts.Current.GamerTag);
+            Debug.Log("Guest Player ID" + _beamContext01.Accounts.Current.GamerTag);
+            return x.Name == _roomName;
+        });
 
         _currentRoom?.Subscribe().Then(_ => HandleGroupChatRoomUpdate(_currentRoom));
     }
     
-    private void HandleChatViewUpdateForGuest(ChatView chatView)
+    private async void HandleChatViewUpdateForGuest(ChatView chatView)
     {
         ChatView01 = chatView;
+        var roomInfos = await _chatService01.GetMyRooms();
+        if (roomInfos != null)
+        {
+            foreach (var room in roomInfos)
+            {
+                Debug.Log("Guest Player Room: " + room.name);
+            }
+        }
+        else
+        {
+            Debug.LogError("Guest Player Room Infos are null");
+        }
         _currentRoom01 = _roomName == "General" ? ChatView01.GuildRooms.LastOrDefault() : ChatView01.roomHandles.Find(x => x.Name == _roomName);
         
         if (_currentRoom01 != null)
@@ -121,6 +151,22 @@ public class ChatRoom : MonoBehaviour
         if (_currentRoom01 != null)
         {
             _currentRoom01.SendMessage(message);
+        }
+    }
+    
+    public void ForgetRoom()
+    {
+        if (_currentRoom != null)
+        {
+            try
+            {
+                ChatView.roomHandles.Remove(_currentRoom);
+                SceneManager.LoadScene("ChatRooms");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error forgetting room: {e.Message}");
+            }
         }
     }
 }
