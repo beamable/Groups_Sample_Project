@@ -156,7 +156,6 @@ public class GroupDetails : MonoBehaviour
         try
         {
             var guestPlayerId = _beamContext01.Accounts.Current;
-            Debug.LogError(_beamContext.PlayerId + " " + guestPlayerId);
             await _chatService.CreateRoom(roomName, false, new List<long> { _beamContext.PlayerId, guestPlayerId.GamerTag });
             PlayerPrefs.SetString("SelectedRoomName", roomName);
             SceneManager.LoadScene("ChatRoom"); 

@@ -36,6 +36,9 @@ public class ChatRoom : MonoBehaviour
         _beamContext = await BeamContext.Default.Instance;
         _beamContext01 = await BeamContext.ForPlayer("MyPlayer02").Instance;
 
+        await _beamContext.Accounts.OnReady;
+        await _beamContext01.Accounts.OnReady;
+        
         _chatService = _beamContext.ServiceProvider.GetService<ChatService>();
         _chatService01 = _beamContext01.ServiceProvider.GetService<ChatService>();
         
@@ -48,7 +51,9 @@ public class ChatRoom : MonoBehaviour
         _chatService.Subscribe(HandleChatViewUpdate);
         
         _chatService01 = _beamContext01.ServiceProvider.GetService<ChatService>();
-        _chatService01.Subscribe(HandleChatViewUpdateForGuest);       
+        _chatService01.Subscribe(HandleChatViewUpdateForGuest);  
+        
+
     }
     
     private void HandleChatViewUpdate(ChatView chatView)
@@ -61,6 +66,8 @@ public class ChatRoom : MonoBehaviour
             {
                 Debug.Log(player);
             }
+            Debug.Log("Main Player ID" + _beamContext.Accounts.Current.GamerTag);
+            Debug.Log("Guest Player ID" + _beamContext01.Accounts.Current.GamerTag);
             return x.Name == _roomName;
         });
 
