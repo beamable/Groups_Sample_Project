@@ -1,8 +1,10 @@
+using System;
 using System.Threading.Tasks;
 using Beamable;
 using Beamable.Common.Api.Groups;
 using Beamable.Server.Clients;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Managers
 {
@@ -77,6 +79,21 @@ namespace Managers
             await _userService.SetPlayerAvatarName(account.GamerTag, username);
 
             Debug.Log("Joined group: " + groupId);
+        }
+            
+        public async Task<Group> GetGroup(long groupId)
+        {
+            try
+            {
+                var group = await _beamContext.Api.GroupsService.GetGroup(groupId);
+                Debug.Log($"Group details retrieved: {group.name}");
+                return group;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error retrieving group details: {e.Message}");
+                throw;
+            }
         }
     }
 
