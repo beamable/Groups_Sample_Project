@@ -52,6 +52,12 @@ public class CreateGroups : MonoBehaviour
             var beamContext01 = await BeamContext.ForPlayer("MyPlayer01").Instance;
             _guestPlayer0 = new PlayerGroupManager(beamContext01);
             await _guestPlayer0.Initialize();
+
+            var groups = await beamContext01.Api.GroupsService.Search("groupName2");
+            if (!(groups.groups[0].name.Length > 0))
+            {
+                await _guestPlayer0.CreateGroup("groupName0", "tag", "open", 0, 30, "GuestPlayer00");
+            }
             
             var beamContext02 = await BeamContext.ForPlayer("MyPlayer02").Instance;
             _guestPlayer1 = new PlayerGroupManager(beamContext02);

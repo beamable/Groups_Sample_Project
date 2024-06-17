@@ -79,16 +79,16 @@ public class GroupDetails : MonoBehaviour
                 groupNameText.text = group.name;
                 groupSloganText.text = group.slogan;
                 groupMotdText.text = group.motd;
-                
-                _isLeader = group.canDisband;
+
+                _isLeader = group.members.Exists(member => member.gamerTag == _beamContext.PlayerId && member.role == "leader");
+
+                foreach (Transform child in groupMembersList)
+                {
+                    Destroy(child.gameObject);
+                }
 
                 if (group.members != null)
                 {
-                    foreach (Transform child in groupMembersList)
-                    {
-                        Destroy(child.gameObject);
-                    }
-                    
                     foreach (var member in group.members)
                     {
                         var username = await _userService.GetPlayerAvatarName(member.gamerTag);
@@ -96,19 +96,14 @@ public class GroupDetails : MonoBehaviour
                     }
                 }
 
-                if (_isLeader)
-                {
-                    disbandGroupButton.gameObject.SetActive(true);
-                    editGroupButton.gameObject.SetActive(true);
-                    createRoom.gameObject.SetActive(true);
-                }
+                disbandGroupButton.gameObject.SetActive(_isLeader);
+                editGroupButton.gameObject.SetActive(_isLeader);
+                createRoom.gameObject.SetActive(_isLeader);
             }
             else
             {
                 Debug.LogError("Group details are null.");
             }
-
-
         }
         catch (Exception e)
         {
@@ -125,6 +120,10 @@ public class GroupDetails : MonoBehaviour
         var kickButton = memberItem.transform.Find("KickButton").GetComponent<Button>();
         kickButton.gameObject.SetActive(_isLeader && gamerTag != _beamContext.PlayerId);
         kickButton.onClick.AddListener(async () => await KickMember(groupId, gamerTag));
+        
+        var setLeaderButton = memberItem.transform.Find("SetLeader").GetComponent<Button>();
+        setLeaderButton.gameObject.SetActive(_isLeader && gamerTag != _beamContext.PlayerId);
+        setLeaderButton.onClick.AddListener(async () => await SetLeader(groupId, gamerTag));
     }
 
     private async Task KickMember(long groupId, long gamerTag)
@@ -141,6 +140,23 @@ public class GroupDetails : MonoBehaviour
         catch (Exception e)
         {
             Debug.LogError($"Error kicking member: {e.Message}");
+        }
+    }
+    
+    private async Task SetLeader(long groupId, long gamerTag)
+    {
+        try
+        {
+            var response = await _beamContext.Api.GroupsService.SetRole(groupId, gamerTag, "leader");
+            if (response != null)
+            {
+                Debug.Log("Member set as leader successfully");
+                await DisplayGroupDetails(groupId); // Refresh the group details
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Error setting leader: {e.Message}");
         }
     }
     
