@@ -94,4 +94,31 @@ public class EditGroup : MonoBehaviour
             }
         }
     }
+    
+    public async void DisbandGroupTrigger()
+    {
+        if (!string.IsNullOrEmpty(_groupIdString) && long.TryParse(_groupIdString, out var groupId))
+        {
+            await DisbandGroup(groupId);
+        }
+    }
+
+    private async Task DisbandGroup(long groupId)
+    {
+        try
+        {
+            var group = await _beamContext.Api.GroupsService.GetGroup(groupId);
+            if (group.canDisband)
+            {
+                await _beamContext.Api.GroupsService.DisbandGroup(groupId);
+                Debug.Log("Group disbanded successfully");
+                SceneManager.LoadScene("CreateGroup");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
 }

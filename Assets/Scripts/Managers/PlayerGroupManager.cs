@@ -4,7 +4,6 @@ using Beamable;
 using Beamable.Common.Api.Groups;
 using Beamable.Server.Clients;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Managers
 {
@@ -21,7 +20,6 @@ namespace Managers
             _beamContext = beamContext;
             _userService = new UserServiceClient();
             _groupsViewInitialized = new TaskCompletionSource<bool>();
-
         }
 
         public async Task Initialize()
@@ -50,7 +48,6 @@ namespace Managers
             
             Debug.Log("New group created: " + groupName);
             return groupResponse.group.id;
-
         }
 
         private async Task LeaveGroups()
@@ -68,7 +65,7 @@ namespace Managers
             _beamContext.Api.GroupsService.Subscribable.ForceRefresh();
             await Task.Delay(300);
         }
-        
+
         public async Task JoinGroup(long groupId, string username)
         {
             await _groupsViewInitialized.Task; // Wait for _groupsView to be initialized
@@ -80,7 +77,7 @@ namespace Managers
 
             Debug.Log("Joined group: " + groupId);
         }
-            
+        
         public async Task<Group> GetGroup(long groupId)
         {
             try
@@ -95,6 +92,60 @@ namespace Managers
                 throw;
             }
         }
-    }
 
+        public async Task<bool> KickMember(long groupId, long gamerTag)
+        {
+            try
+            {
+                var response = await _beamContext.Api.GroupsService.Kick(groupId, gamerTag);
+                if (response != null)
+                {
+                    Debug.Log("Member kicked successfully");
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error kicking member: {e.Message}");
+            }
+            return false;
+        }
+
+        public async Task<bool> SetLeader(long groupId, long gamerTag)
+        {
+            try
+            {
+                var response = await _beamContext.Api.GroupsService.SetRole(groupId, gamerTag, "leader");
+                if (response != null)
+                {
+                    Debug.Log("Member set as leader successfully");
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error setting leader: {e.Message}");
+            }
+            return false;
+        }
+
+        public async Task<bool> DisbandGroup(long groupId)
+        {
+            try
+            {
+                var group = await _beamContext.Api.GroupsService.GetGroup(groupId);
+                if (group.canDisband)
+                {
+                    await _beamContext.Api.GroupsService.DisbandGroup(groupId);
+                    Debug.Log("Group disbanded successfully");
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error disbanding group: {e.Message}");
+            }
+            return false;
+        }
+    }
 }
