@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Beamable;
 using Beamable.Common.Api.Groups;
-using Beamable.Experimental.Api.Chat;
-using Beamable.Server.Clients;
+using Managers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -12,7 +10,7 @@ using UnityEngine.UI;
 
 public class EditGroup : MonoBehaviour
 {
-    private BeamContext _beamContext;
+    private PlayerGroupManager _groupManager;
     private Group _group;
     
     private string _groupIdString;
@@ -32,34 +30,39 @@ public class EditGroup : MonoBehaviour
 
     private async void Start()
     {
-        _beamContext = await BeamContext.Default.Instance;
-        
+        var beamContext = await BeamContext.Default.Instance;
+        _groupManager = new PlayerGroupManager(beamContext);
+        await _groupManager.Initialize();
+
         _groupIdString = PlayerPrefs.GetString("SelectedGroupId", string.Empty);
         if (!string.IsNullOrEmpty(_groupIdString) && long.TryParse(_groupIdString, out var groupId))
         {
-            _group = await _beamContext.Api.GroupsService.GetGroup(groupId);
-            groupNameText.text = _group.name;
-            groupNameInput.text = _group.name;
-            groupSloganInput.text = _group.slogan;
-            groupMotdInput.text = _group.motd;
-            switch (_group.enrollmentType.ToLower())
+            _group = await _groupManager.GetGroup(groupId);
+            if (_group != null)
             {
-                case "open":
-                    groupTypeDropdown.value = 0;
-                    break;
-                case "restricted":
-                    groupTypeDropdown.value = 1;
-                    break;
-                case "closed":
-                    groupTypeDropdown.value = 2;
-                    break;
-                default:
-                    Debug.LogWarning($"Unknown enrollment type: {_group.enrollmentType}");
-                    break;
-            }        }
-        
+                groupNameText.text = _group.name;
+                groupNameInput.text = _group.name;
+                groupSloganInput.text = _group.slogan;
+                groupMotdInput.text = _group.motd;
+                switch (_group.enrollmentType.ToLower())
+                {
+                    case "open":
+                        groupTypeDropdown.value = 0;
+                        break;
+                    case "restricted":
+                        groupTypeDropdown.value = 1;
+                        break;
+                    case "closed":
+                        groupTypeDropdown.value = 2;
+                        break;
+                    default:
+                        Debug.LogWarning($"Unknown enrollment type: {_group.enrollmentType}");
+                        break;
+                }
+            }
+        }
     }
-    
+
     public void GoBack()
     {
         SceneManager.LoadScene("GroupDetails");
@@ -82,43 +85,20 @@ public class EditGroup : MonoBehaviour
                 enrollmentType = groupType
             };
 
-            try
-            {
-                await _beamContext.Api.GroupsService.SetGroupProps(groupId, props);
-                resultText.text = "Group updated successfully";
-            }
-            catch (Exception e)
-            {
-                resultText.text = "Error updating group";
-                Debug.LogError($"Error updating group: {e.Message}");
-            }
+            var result = await _groupManager.UpdateGroupProperties(groupId, props);
+            resultText.text = result ? "Group updated successfully" : "Error updating group";
         }
     }
-    
+
     public async void DisbandGroupTrigger()
     {
         if (!string.IsNullOrEmpty(_groupIdString) && long.TryParse(_groupIdString, out var groupId))
         {
-            await DisbandGroup(groupId);
-        }
-    }
-
-    private async Task DisbandGroup(long groupId)
-    {
-        try
-        {
-            var group = await _beamContext.Api.GroupsService.GetGroup(groupId);
-            if (group.canDisband)
+            var result = await _groupManager.DisbandGroup(groupId);
+            if (result)
             {
-                await _beamContext.Api.GroupsService.DisbandGroup(groupId);
-                Debug.Log("Group disbanded successfully");
                 SceneManager.LoadScene("CreateGroup");
             }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
         }
     }
 }

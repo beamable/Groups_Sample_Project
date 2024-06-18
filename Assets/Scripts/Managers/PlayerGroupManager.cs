@@ -147,5 +147,20 @@ namespace Managers
             }
             return false;
         }
+
+        public async Task<bool> UpdateGroupProperties(long groupId, GroupUpdateProperties props)
+        {
+            try
+            {
+                await _beamContext.Api.GroupsService.SetGroupProps(groupId, props);
+                Debug.Log("Group properties updated successfully");
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error updating group properties: {e.Message}");
+            }
+            return false;
+        }
     }
 }
