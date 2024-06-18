@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Beamable;
 using Beamable.Experimental.Api.Chat;
 using Beamable.Server.Clients;
+using Managers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -19,51 +21,53 @@ public class GroupDetails : MonoBehaviour
 
     private string _groupIdString;
     private bool _isLeader;
-    
+    private PlayerGroupManager _groupManager;
+
     [SerializeField]
     private TMP_Text groupNameText;
-    [SerializeField] 
+    [SerializeField]
     private TMP_Text groupSloganText;
     [SerializeField]
     private TMP_Text groupMotdText;
     [SerializeField]
     private TMP_Text groupMembersText;
-    [SerializeField] 
+    [SerializeField]
     private TMP_InputField chatNameInput;
-    [SerializeField] 
+    [SerializeField]
     private Button startChatButton;
-    [SerializeField] 
-    private Button disbandGroupButton;
-    [SerializeField] 
+    [SerializeField]
     private Button editGroupButton;
-    [SerializeField] 
+    [SerializeField]
     private GameObject createRoom;
     [SerializeField]
     private GameObject memberItemPrefab;
     [SerializeField]
     private Transform groupMembersList;
-    
-
+    [SerializeField]
+    private GameObject setLeaderPanel; 
 
     private async void Start()
     {
         _beamContext = await BeamContext.Default.Instance;
         _beamContext01 = await BeamContext.ForPlayer("MyPlayer02").Instance;
         await _beamContext01.Accounts.OnReady;
-        
+
         _userService = new UserServiceClient();
+        _groupManager = new PlayerGroupManager(_beamContext);
+        await _groupManager.Initialize();
+        
         startChatButton.interactable = false;
         _chatService = _beamContext.ServiceProvider.GetService<ChatService>();
-        
+
         SetupUIListeners();
 
-         _groupIdString = PlayerPrefs.GetString("SelectedGroupId", string.Empty);
+        _groupIdString = PlayerPrefs.GetString("SelectedGroupId", string.Empty);
         if (!string.IsNullOrEmpty(_groupIdString) && long.TryParse(_groupIdString, out var groupId))
         {
             await DisplayGroupDetails(groupId);
         }
     }
-    
+
     private void SetupUIListeners()
     {
         chatNameInput.onValueChanged.AddListener(CheckFields);
@@ -73,7 +77,7 @@ public class GroupDetails : MonoBehaviour
     {
         try
         {
-            var group = await _beamContext.Api.GroupsService.GetGroup(groupId);
+            var group = await _groupManager.GetGroup(groupId);
             if (group != null)
             {
                 groupNameText.text = group.name;
@@ -96,7 +100,6 @@ public class GroupDetails : MonoBehaviour
                     }
                 }
 
-                disbandGroupButton.gameObject.SetActive(_isLeader);
                 editGroupButton.gameObject.SetActive(_isLeader);
                 createRoom.gameObject.SetActive(_isLeader);
             }
@@ -110,7 +113,7 @@ public class GroupDetails : MonoBehaviour
             Debug.LogError($"Error fetching group details: {e.Message}");
         }
     }
-    
+
     private void AddMemberItem(string username, long groupId, long gamerTag)
     {
         var memberItem = Instantiate(memberItemPrefab, groupMembersList);
@@ -120,7 +123,7 @@ public class GroupDetails : MonoBehaviour
         var kickButton = memberItem.transform.Find("KickButton").GetComponent<Button>();
         kickButton.gameObject.SetActive(_isLeader && gamerTag != _beamContext.PlayerId);
         kickButton.onClick.AddListener(async () => await KickMember(groupId, gamerTag));
-        
+
         var setLeaderButton = memberItem.transform.Find("SetLeader").GetComponent<Button>();
         setLeaderButton.gameObject.SetActive(_isLeader && gamerTag != _beamContext.PlayerId);
         setLeaderButton.onClick.AddListener(async () => await SetLeader(groupId, gamerTag));
@@ -128,45 +131,26 @@ public class GroupDetails : MonoBehaviour
 
     private async Task KickMember(long groupId, long gamerTag)
     {
-        try
+        if (await _groupManager.KickMember(groupId, gamerTag))
         {
-            var response = await _beamContext.Api.GroupsService.Kick(groupId, gamerTag);
-            if (response != null)
-            {
-                Debug.Log("Member kicked successfully");
-                await DisplayGroupDetails(groupId); // Refresh the group details
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"Error kicking member: {e.Message}");
+            await DisplayGroupDetails(groupId); // Refresh the group details
         }
     }
-    
+
     private async Task SetLeader(long groupId, long gamerTag)
     {
-        try
+        if (await _groupManager.SetLeader(groupId, gamerTag))
         {
-            var response = await _beamContext.Api.GroupsService.SetRole(groupId, gamerTag, "leader");
-            if (response != null)
-            {
-                Debug.Log("Member set as leader successfully");
-                await DisplayGroupDetails(groupId); // Refresh the group details
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"Error setting leader: {e.Message}");
+            await DisplayGroupDetails(groupId); // Refresh the group details
         }
     }
-    
+
     private void CheckFields(string value)
     {
         var allFieldsCompleted = !string.IsNullOrEmpty(chatNameInput.text);
-
         startChatButton.interactable = allFieldsCompleted;
     }
-    
+
     private async Task StartChat(string roomName)
     {
         try
@@ -174,48 +158,51 @@ public class GroupDetails : MonoBehaviour
             var guestPlayerId = _beamContext01.Accounts.Current;
             await _chatService.CreateRoom(roomName, false, new List<long> { _beamContext.PlayerId, guestPlayerId.GamerTag });
             PlayerPrefs.SetString("SelectedRoomName", roomName);
-            SceneManager.LoadScene("ChatRoom"); 
+            SceneManager.LoadScene("ChatRoom");
         }
         catch (Exception e)
         {
             Debug.LogError($"Error creating chat room: {e.Message}");
         }
     }
+    
+    public async void LeaveGroup()
+    {
+        if (string.IsNullOrEmpty(_groupIdString) || !long.TryParse(_groupIdString, out var groupId)) return;
+        var group = await _groupManager.GetGroup(groupId);
+        Debug.Log(_beamContext.PlayerId);
+        if (group.members.Exists(member => member.gamerTag == _beamContext.PlayerId && member.role == "leader"))
+        {
+            setLeaderPanel.SetActive(true);
+            StartCoroutine(HideSetLeaderPanel());
+        }
+        else
+        {
+            try
+            {
+                await _groupManager.LeaveGroup(groupId);
+                Debug.Log("Left group successfully");
+                SceneManager.LoadScene("CreateGroup"); // Navigate to a different scene after leaving the group
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error leaving group: {e.Message}");
+            }
+        }
+    }
+    
+    private IEnumerator HideSetLeaderPanel()
+    {
+        yield return new WaitForSeconds(5);
+        setLeaderPanel.SetActive(false);
+    }
 
     public async void StartChatButton()
     {
         var roomName = chatNameInput.text;
         await StartChat(roomName);
-
     }
 
-    public async void DisbandGroupTrigger()
-    {
-        if (!string.IsNullOrEmpty(_groupIdString) && long.TryParse(_groupIdString, out var groupId))
-        {
-            await DisbandGroup(groupId);
-        }
-    }
-
-    private async Task DisbandGroup(long groupId)
-    {
-        try
-        {
-            var group = await _beamContext.Api.GroupsService.GetGroup(groupId);
-            if (group.canDisband)
-            {
-                await _beamContext.Api.GroupsService.DisbandGroup(groupId);
-                Debug.Log("Group disbanded successfully");
-                SceneManager.LoadScene("CreateGroup");
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-    }
-    
     public void LoadEditGroupScene()
     {
         SceneManager.LoadScene("EditGroup");
