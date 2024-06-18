@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Beamable;
@@ -42,6 +43,8 @@ public class GroupDetails : MonoBehaviour
     private GameObject memberItemPrefab;
     [SerializeField]
     private Transform groupMembersList;
+    [SerializeField]
+    private GameObject setLeaderPanel; 
 
     private async void Start()
     {
@@ -161,6 +164,37 @@ public class GroupDetails : MonoBehaviour
         {
             Debug.LogError($"Error creating chat room: {e.Message}");
         }
+    }
+    
+    public async void LeaveGroup()
+    {
+        if (string.IsNullOrEmpty(_groupIdString) || !long.TryParse(_groupIdString, out var groupId)) return;
+        var group = await _groupManager.GetGroup(groupId);
+        Debug.Log(_beamContext.PlayerId);
+        if (group.members.Exists(member => member.gamerTag == _beamContext.PlayerId && member.role == "leader"))
+        {
+            setLeaderPanel.SetActive(true);
+            StartCoroutine(HideSetLeaderPanel());
+        }
+        else
+        {
+            try
+            {
+                await _groupManager.LeaveGroup(groupId);
+                Debug.Log("Left group successfully");
+                SceneManager.LoadScene("CreateGroup"); // Navigate to a different scene after leaving the group
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error leaving group: {e.Message}");
+            }
+        }
+    }
+    
+    private IEnumerator HideSetLeaderPanel()
+    {
+        yield return new WaitForSeconds(5);
+        setLeaderPanel.SetActive(false);
     }
 
     public async void StartChatButton()

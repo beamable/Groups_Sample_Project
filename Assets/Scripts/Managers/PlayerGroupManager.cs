@@ -65,6 +65,22 @@ namespace Managers
             _beamContext.Api.GroupsService.Subscribable.ForceRefresh();
             await Task.Delay(300);
         }
+        
+        public async Task LeaveGroup(long groupId)
+        {
+            try
+            {
+                var response = await _beamContext.Api.GroupsService.LeaveGroup(groupId);
+                if (response != null)
+                {
+                    Debug.Log("Left group successfully");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error leaving group: {e.Message}");
+            }
+        }
 
         public async Task JoinGroup(long groupId, string username)
         {
