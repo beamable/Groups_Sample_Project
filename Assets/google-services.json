@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "311013909582",
+    "project_id": "group-example-test",
+    "storage_bucket": "group-example-test.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:311013909582:android:359a00f3b2f24c69f08f1f",
+        "android_client_info": {
+          "package_name": "com.beamable.example_groups_sample"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBamfjeT8u_406X_wKY_avQAgaoldulpBA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

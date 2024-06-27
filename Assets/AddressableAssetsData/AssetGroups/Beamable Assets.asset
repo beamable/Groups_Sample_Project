@@ -15,15 +15,15 @@ MonoBehaviour:
   m_GroupName: Beamable Assets
   m_Data:
     m_SerializedData: []
-  m_GUID: fe9a325c2e249b84db5cd81191157b31
+  m_GUID: c041f01f6d9246044ab68ed1a94a90bf
   m_SerializeEntries:
   - m_GUID: f819a6beb22c04c8d9f8222f930252b5
     m_Address: Assets/Beamable/DefaultAssets/currency/icon.png
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0
-  m_Settings: {fileID: 11400000, guid: 84ac89b950fccd24a9366e9b3c9df767, type: 2}
+  m_Settings: {fileID: 11400000, guid: fd285127e6499bc42a85a183db588d39, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 46c239d0e1c7b5f4994ab61ec2cd9977, type: 2}
-    - {fileID: 11400000, guid: b8e8e2ec8058a8e498cf1a0747100bb9, type: 2}
+    - {fileID: 11400000, guid: e1e719cca0edd944b840cfb84757a953, type: 2}
+    - {fileID: 11400000, guid: a66c39c982a9f9e44b70af317363beab, type: 2}

@@ -1205,7 +1205,7 @@ MonoBehaviour:
   createRoom: {fileID: 115949935}
   memberItemPrefab: {fileID: 3148322257433250143, guid: 4fabe633012922e4c89581fdf9ec25fe, type: 3}
   groupMembersList: {fileID: 1678118482}
-  setLeaderPanel: {fileID: 1135191186}
+  setLeaderPanel: {fileID: 0}
 --- !u!114 &473092845
 MonoBehaviour:
   m_ObjectHideFlags: 0

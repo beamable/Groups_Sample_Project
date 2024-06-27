@@ -2,11 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Beamable;
 using Beamable.Experimental.Api.Chat;
 using Beamable.Server.Clients;
 using TMPro;
+using Unity.Notifications.Android;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -23,6 +23,7 @@ public class ChatRoom : MonoBehaviour
     private RoomHandle _currentRoom01;
 
     private UserServiceClient _userService;
+    private NotificationsServiceClient _notificationsService;
     private List<Message> _activeGroupChatMessages;
     private ChatView ChatView { get; set; }
     private ChatView ChatView01 { get; set; }
@@ -46,7 +47,8 @@ public class ChatRoom : MonoBehaviour
         _chatService01 = _beamContext01.ServiceProvider.GetService<ChatService>();
         
         _userService = new UserServiceClient();
-
+        _notificationsService = new NotificationsServiceClient();
+        
         _roomName = PlayerPrefs.GetString("SelectedRoomName", string.Empty);
         roomNameText.text = _roomName;
         
@@ -58,7 +60,7 @@ public class ChatRoom : MonoBehaviour
         
 
     }
-    
+
     private void HandleChatViewUpdate(ChatView chatView)
     {
         ChatView = chatView;
@@ -120,7 +122,10 @@ public class ChatRoom : MonoBehaviour
         var username = await _userService.GetPlayerAvatarName(message.gamerTag);
         string roomMessage = $"{username.data}: {message.content}";
         chatLogText.text += $"{roomMessage}\n";
+
+        var result = await _notificationsService.SendNotification(message.gamerTag, username.data);
     }
+
     
     private async void LoadChatHistory()
     {
@@ -147,7 +152,7 @@ public class ChatRoom : MonoBehaviour
     private IEnumerator SendGuestMessageAfterDelay(float delay, string message)
     {
         yield return new WaitForSeconds(delay);
-
+        
         if (_currentRoom01 != null)
         {
             _currentRoom01.SendMessage(message);

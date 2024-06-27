@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Beamable;
 using Beamable.Common.Api.Groups;
+using Beamable.Common.Utils;
 using Beamable.Server.Clients;
 using UnityEngine;
 
@@ -36,18 +37,28 @@ namespace Managers
             _isSubscribed = true;
         }
 
-        public async Task<long> CreateGroup(string groupName, string groupTag, string groupType, int minMembers, int maxMembers, string username)
+        public async Task<Response<long>> CreateGroup(string groupName, string groupTag, string groupType, int minMembers, int maxMembers, string username)
         {
             await _groupsViewInitialized.Task; // Wait for _groupsView to be initialized
             await LeaveGroups();
-            
             var account = _beamContext.Accounts.Current;
+
+            // Attempt to set the avatar name first
+            var response = await _userService.SetPlayerAvatarName(account.GamerTag, username);
+
+            // If there's an error, log it and return the error response
+            if (!string.IsNullOrEmpty(response.errorMessage))
+            {
+                Debug.LogError(response.errorMessage);
+                return new Response<long>(default, response.errorMessage);
+            }
+
+            // Proceed to create the group
             var groupCreateRequest = new GroupCreateRequest(groupName, groupTag, groupType, minMembers, maxMembers);
             var groupResponse = await _beamContext.Api.GroupsService.CreateGroup(groupCreateRequest);
-            await _userService.SetPlayerAvatarName(account.GamerTag, username);
-            
+
             Debug.Log("New group created: " + groupName);
-            return groupResponse.group.id;
+            return new Response<long>(groupResponse.group.id);
         }
 
         private async Task LeaveGroups()
@@ -62,6 +73,7 @@ namespace Managers
             {
                 await _beamContext.Api.GroupsService.LeaveGroup(group.Group.id);
             }
+            Debug.Log("Left groups");
             _beamContext.Api.GroupsService.Subscribable.ForceRefresh();
             await Task.Delay(300);
         }
@@ -90,6 +102,7 @@ namespace Managers
             var account = _beamContext.Accounts.Current;
             await _beamContext.Api.GroupsService.JoinGroup(groupId);
             await _userService.SetPlayerAvatarName(account.GamerTag, username);
+            Debug.Log(account.GamerTag + " " + username);
 
             Debug.Log("Joined group: " + groupId);
         }
@@ -99,7 +112,6 @@ namespace Managers
             try
             {
                 var group = await _beamContext.Api.GroupsService.GetGroup(groupId);
-                Debug.Log($"Group details retrieved: {group.name}");
                 return group;
             }
             catch (Exception e)

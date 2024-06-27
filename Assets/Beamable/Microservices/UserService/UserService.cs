@@ -14,11 +14,13 @@ namespace Beamable.Microservices
 	[Microservice("UserService")]
 	public class UserService : Microservice
 	{
+		
 		[ClientCallable]
 		public async Promise<Response<string>> GetPlayerAvatarName(long gamerTag)
 		{
 			try
 			{
+				Debug.Log(gamerTag.ToString());
 				var playerData = await Storage.GetByFieldName<PlayerData, long>("gamerTag", gamerTag);
 				if (playerData != null && !string.IsNullOrEmpty(playerData.avatarName))
 				{
@@ -41,17 +43,31 @@ namespace Beamable.Microservices
 		{
 			try
 			{
-				var existingPlayerData = await Storage.GetByFieldName<PlayerData, string>("avatarName", avatarName);
-				if (existingPlayerData != null)
+				// Check if the avatar name already exists
+				var duplicateAvatarNameData = await Storage.GetByFieldName<PlayerData, string>("avatarName", avatarName);
+				if (duplicateAvatarNameData != null)
 				{
 					return new Response<bool>(false, "Avatar name already exists");
 				}
 
-				await Storage.Create<UserGroupData, PlayerData>(new PlayerData
+				// Check if the player with the given gamerTag exists
+				var existingPlayerData = await Storage.GetByFieldName<PlayerData, long>("gamerTag", gamerTag);
+				if (existingPlayerData == null)
 				{
-					gamerTag = gamerTag, 
-					avatarName = avatarName
-				});
+					// Create a new player data record
+					await Storage.Create<UserGroupData, PlayerData>(new PlayerData
+					{
+						gamerTag = gamerTag,
+						avatarName = avatarName
+					});
+				}
+				else
+				{
+					// Update the existing player data with the new avatar name
+					existingPlayerData.avatarName = avatarName;
+					await Storage.Update(existingPlayerData.Id, existingPlayerData);
+				}
+
 				return new Response<bool>(true);
 			}
 			catch (Exception e)
@@ -60,6 +76,7 @@ namespace Beamable.Microservices
 				return new Response<bool>(false, "Error setting avatar name");
 			}
 		}
+
 		
 		[ClientCallable]
 		public string Test(long lala, string lalala)
