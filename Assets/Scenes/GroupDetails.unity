@@ -1198,14 +1198,14 @@ MonoBehaviour:
   groupNameText: {fileID: 1131854861}
   groupSloganText: {fileID: 27184126}
   groupMotdText: {fileID: 686158500}
-  groupMembersText: {fileID: 0}
   chatNameInput: {fileID: 102930394}
   startChatButton: {fileID: 1431679970}
   editGroupButton: {fileID: 1134375408}
+  leaveGroupButton: {fileID: 1191300837}
   createRoom: {fileID: 115949935}
   memberItemPrefab: {fileID: 3148322257433250143, guid: 4fabe633012922e4c89581fdf9ec25fe, type: 3}
   groupMembersList: {fileID: 1678118482}
-  setLeaderPanel: {fileID: 0}
+  setLeaderPanel: {fileID: 1135191186}
 --- !u!114 &473092845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2678,7 +2678,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1191300836
 RectTransform:
   m_ObjectHideFlags: 0

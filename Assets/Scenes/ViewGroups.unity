@@ -634,7 +634,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 146569448}
   m_HandleRect: {fileID: 146569447}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -958,7 +958,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   searchInput: {fileID: 871666390}
-  groupsListText: {fileID: 794681592}
   groupButtonPrefab: {fileID: 8610928602424259785, guid: 251da5814d40d6c44842831c767f9acc, type: 3}
   groupsListContent: {fileID: 795790500}
 --- !u!1 &790245844
@@ -1131,7 +1130,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -52.5, y: -139.115}
+  m_AnchoredPosition: {x: -52.500015, y: -139.115}
   m_SizeDelta: {x: -152.91, y: 23.769989}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &794681592
@@ -1346,7 +1345,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -24.32, y: -82.04}
+  m_AnchoredPosition: {x: -24.319992, y: -82.04001}
   m_SizeDelta: {x: -84.64, y: 31.96}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &871666390
@@ -1991,7 +1990,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 2.7299805, y: -180.14001}
-  m_SizeDelta: {x: -42.45, y: 341.86}
+  m_SizeDelta: {x: -42.45, y: 393.22}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &2027245550
 MonoBehaviour:

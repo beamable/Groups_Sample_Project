@@ -43,14 +43,18 @@ namespace Managers
             await LeaveGroups();
             var account = _beamContext.Accounts.Current;
 
-            // Attempt to set the avatar name first
-            var response = await _userService.SetPlayerAvatarName(account.GamerTag, username);
-
-            // If there's an error, log it and return the error response
-            if (!string.IsNullOrEmpty(response.errorMessage))
+            // Check if the username is empty
+            if (!string.IsNullOrEmpty(username))
             {
-                Debug.LogError(response.errorMessage);
-                return new Response<long>(default, response.errorMessage);
+                // Attempt to set the avatar name first
+                var response = await _userService.SetPlayerAvatarName(account.GamerTag, username);
+
+                // If there's an error, log it and return the error response
+                if (!string.IsNullOrEmpty(response.errorMessage))
+                {
+                    Debug.LogError(response.errorMessage);
+                    return new Response<long>(default, response.errorMessage);
+                }
             }
 
             // Proceed to create the group
@@ -60,6 +64,7 @@ namespace Managers
             Debug.Log("New group created: " + groupName);
             return new Response<long>(groupResponse.group.id);
         }
+
 
         private async Task LeaveGroups()
         {
