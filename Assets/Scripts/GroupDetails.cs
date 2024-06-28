@@ -30,13 +30,13 @@ public class GroupDetails : MonoBehaviour
     [SerializeField]
     private TMP_Text groupMotdText;
     [SerializeField]
-    private TMP_Text groupMembersText;
-    [SerializeField]
     private TMP_InputField chatNameInput;
     [SerializeField]
     private Button startChatButton;
     [SerializeField]
     private Button editGroupButton;
+    [SerializeField]
+    private Button leaveGroupButton;
     [SerializeField]
     private GameObject createRoom;
     [SerializeField]
@@ -84,7 +84,10 @@ public class GroupDetails : MonoBehaviour
                 groupSloganText.text = group.slogan;
                 groupMotdText.text = group.motd;
 
+                var playerInGroup = group.members.Exists(member => member.gamerTag == _beamContext.PlayerId);
+
                 _isLeader = group.members.Exists(member => member.gamerTag == _beamContext.PlayerId && member.role == "leader");
+                leaveGroupButton.gameObject.SetActive(playerInGroup);
 
                 foreach (Transform child in groupMembersList)
                 {
