@@ -1,10 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Beamable;
-using Beamable.Common.Api;
-using Beamable.Common.Api.Groups;
-using Beamable.Server.Clients;
-using Managers;
 using Managers;
 using UnityEngine;
 using TMPro;
@@ -38,8 +34,6 @@ public class CreateGroups : MonoBehaviour
             await SetupBeamable();
             SetupUIListeners();
             
-            await _guestPlayer0.CreateGroup("groupName2", "tag", "open", 0, 30, "GuestPlayer00");
-            
             createGroupButton.interactable = false;
         }
 
@@ -56,9 +50,11 @@ public class CreateGroups : MonoBehaviour
             var groups = await beamContext01.Api.GroupsService.Search("groupName2");
             if (!(groups.groups[0].name.Length > 0))
             {
-                await _guestPlayer0.CreateGroup("groupName0", "tag", "open", 0, 30, "GuestPlayer00");
+                var username = GenerateUniqueName();
+                await _guestPlayer0.CreateGroup("groupName2", "tag", "open", 0, 30, username);
             }
             
+
             var beamContext02 = await BeamContext.ForPlayer("MyPlayer02").Instance;
             _guestPlayer1 = new PlayerGroupManager(beamContext02);
             await _guestPlayer1.Initialize();
@@ -103,12 +99,19 @@ public class CreateGroups : MonoBehaviour
             var generatedTag = GenerateTag(groupNameInput.text);
             var type = GetDropdownValue();
 
-            var groupId = await _mainPlayer.CreateGroup(groupNameInput.text, generatedTag, type, int.Parse(minMembersInput.text),
+            var response = await _mainPlayer.CreateGroup(groupNameInput.text, generatedTag, type, int.Parse(minMembersInput.text),
                 int.Parse(maxMembersInput.text), usernameInput.text);
-            
-            await _guestPlayer1.JoinGroup(groupId, "GuestPlayer01");
-            
-            infoText.text = "Group created successfully!";
+
+            if (!string.IsNullOrEmpty(response.errorMessage))
+            {
+                infoText.text = "Error: " + response.errorMessage;
+            }
+            else
+            {
+                var username = GenerateUniqueName();
+                await _guestPlayer1.JoinGroup(response.data, username);
+                infoText.text = "Group created successfully!";
+            }
         }
         
         private void CheckFields(string value)
@@ -119,5 +122,10 @@ public class CreateGroups : MonoBehaviour
 
             createGroupButton.interactable = allFieldsCompleted;
         }
-      
+
+        private string GenerateUniqueName()
+        {
+            var random = new System.Random();
+            return $"GuestUser{random.Next(10000000, 99999999)}";
+        }
     }
