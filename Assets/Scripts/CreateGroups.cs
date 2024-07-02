@@ -1,3 +1,4 @@
+
 using System;
 using System.Threading.Tasks;
 using Beamable;
@@ -48,7 +49,7 @@ public class CreateGroups : MonoBehaviour
             await _guestPlayer0.Initialize();
 
             var groups = await beamContext01.Api.GroupsService.Search("groupName2");
-            if (!(groups.groups[0].name.Length > 0))
+            if (groups.groups == null || groups.groups.Count == 0)
             {
                 var username = GenerateUniqueName();
                 await _guestPlayer0.CreateGroup("groupName2", "tag", "open", 0, 30, username);
@@ -129,3 +130,4 @@ public class CreateGroups : MonoBehaviour
             return $"GuestUser{random.Next(10000000, 99999999)}";
         }
     }
+
