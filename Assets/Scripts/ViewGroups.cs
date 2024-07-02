@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ public class ViewGroups : MonoBehaviour
 
     private GroupsView _groupsView = null;
     private List<Group> _allGroups = new List<Group>();
+    private bool isDisplayingGroups = false;
 
     protected async void Start()
     {
@@ -57,10 +59,32 @@ public class ViewGroups : MonoBehaviour
 
     private void DisplayGroups(List<Group> groups)
     {
+        if (isDisplayingGroups)
+            return;
+
+        StartCoroutine(DisplayGroupsCoroutine(groups));
+    }
+
+    private IEnumerator DisplayGroupsCoroutine(List<Group> groups)
+    {
+        isDisplayingGroups = true;
+
         // Clear previous group listings
         foreach (Transform child in groupsListContent)
         {
-            Destroy(child.gameObject);
+            if (child != null)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        // Wait for the end of the frame to ensure all child objects are destroyed
+        yield return new WaitForEndOfFrame();
+
+        if (this == null)
+        {
+            // The object has been destroyed, exit the coroutine
+            yield break;
         }
 
         var count = 1;
@@ -71,6 +95,8 @@ public class ViewGroups : MonoBehaviour
             button.onClick.AddListener(() => OnGroupClick(group));
             count++;
         }
+
+        isDisplayingGroups = false;
     }
 
     public void OnSearchValueChanged(string searchText)
