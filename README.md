@@ -20,6 +20,7 @@ This project is focused on implementing a group management feature for players.
 - **As a player, if I am the group leader, I can delete chat rooms I’ve created.**
 - **As a player, if I am the leader and I choose to leave, I can assign someone as the new leader.**
 - **As a player, if someone puts a message in a chat room, I get a push notification.**
+- **As a player, I can join other chat rooms, view the message history, and leave messages.**
 
 ### In Progress
 
@@ -35,4 +36,3 @@ This project is focused on implementing a group management feature for players.
 
 ### Blocked
 
-- **As a player, I can join other chat rooms, view the message history, and leave messages.**
