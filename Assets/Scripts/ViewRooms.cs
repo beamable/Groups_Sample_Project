@@ -19,7 +19,7 @@ public class ViewRooms: MonoBehaviour
         private Transform roomListContent;
         
         private ChatService _chatService;
-        private List<RoomHandle> _chatRooms;
+        private List<RoomInfo> _chatRooms;
 
 
         protected async void Start()
@@ -28,7 +28,7 @@ public class ViewRooms: MonoBehaviour
             
             _chatService = _beamContext.ServiceProvider.GetService<ChatService>();
             _chatService.Subscribe(GetRooms);
-            _chatRooms = new List<RoomHandle>();
+            _chatRooms = new List<RoomInfo>();
 
         }
 
@@ -37,18 +37,33 @@ public class ViewRooms: MonoBehaviour
             _beamContext = await BeamContext.Default.Instance;
         }
         
-        private void GetRooms(ChatView chatView)
+        private async void GetRooms(ChatView chatView)
         {
-            _chatRooms = chatView.roomHandles;
+            _chatRooms = await _chatService.GetMyRooms();
             DisplayRooms(_chatRooms);
         }
         
-        private void DisplayRooms(List<RoomHandle> rooms)
+        private void DisplayRooms(List<RoomInfo> rooms)
         {
+            // Clear existing buttons
+            foreach (Transform child in roomListContent)
+            {
+                Destroy(child.gameObject);
+            }
+
+            if (rooms.Count == 0)
+            {
+                // Display a message indicating no rooms are available
+                var messageText = Instantiate(roomButtonPrefab, roomListContent);
+                messageText.GetComponentInChildren<TextMeshProUGUI>().text = "No rooms available";
+                messageText.interactable = false; // Optionally disable interaction
+                return;
+            }
+
             var count = 1;
             foreach (var room in rooms)
             {
-                var roomName = room.Name;
+                var roomName = room.name;
                 if (count > 1) // Skip the first element
                 {
                     if (count == 2) // Change the name for the second button
@@ -63,6 +78,7 @@ public class ViewRooms: MonoBehaviour
                 count++;
             }
         }
+
 
         
         private void OnGroupClick(string roomName)

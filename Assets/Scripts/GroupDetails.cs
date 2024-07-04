@@ -15,7 +15,7 @@ public class GroupDetails : MonoBehaviour
 {
     private BeamContext _beamContext;
     private BeamContext _beamContext01;
-
+    
     private UserServiceClient _userService;
     private ChatService _chatService;
 
