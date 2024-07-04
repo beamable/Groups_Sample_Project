@@ -20,7 +20,6 @@ namespace Beamable.Microservices
 		{
 			try
 			{
-				Debug.Log(gamerTag.ToString());
 				var playerData = await Storage.GetByFieldName<PlayerData, long>("gamerTag", gamerTag);
 				if (playerData != null && !string.IsNullOrEmpty(playerData.avatarName))
 				{
@@ -75,15 +74,6 @@ namespace Beamable.Microservices
 				BeamableLogger.LogError(e);
 				return new Response<bool>(false, "Error setting avatar name");
 			}
-		}
-
-		
-		[ClientCallable]
-		public string Test(long lala, string lalala)
-		{
-			Debug.Log("Testt");
-			return "test";
-
 		}
 	}
 }

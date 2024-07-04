@@ -13,13 +13,6 @@ namespace Beamable.Server
 	{
 	}
 
-	public class User
-	{
-		public ObjectId ID;
-		public long GamerTag;
-		public string Username;
-	}
-
 	public static class UserGroupDataExtension
 	{
 		/// <summary>
