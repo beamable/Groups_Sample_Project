@@ -28,10 +28,10 @@ This project is focused on implementing a group management feature for players.
 
 ### Next
 
+- **As a player, if I am the leader, I can invite someone to the group.**
 
 ### To Do
 
-- **As a player, if I am the leader, I can invite someone to the group.**
 - **As a player, if I am invited to a group, it appears as a pop-up the next time they log in. They can decide to join or ignore the invite.**
 
 ### Blocked
