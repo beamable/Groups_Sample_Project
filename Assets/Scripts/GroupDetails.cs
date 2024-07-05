@@ -44,7 +44,12 @@ public class GroupDetails : MonoBehaviour
     [SerializeField]
     private Transform groupMembersList;
     [SerializeField]
-    private GameObject setLeaderPanel; 
+    private GameObject setLeaderPanel;
+    [SerializeField] 
+    private GameObject sendInvite;
+    [SerializeField]
+    private TMP_InputField inviteInput;
+
 
     private async void Start()
     {
@@ -105,6 +110,7 @@ public class GroupDetails : MonoBehaviour
 
                 editGroupButton.gameObject.SetActive(_isLeader);
                 createRoom.gameObject.SetActive(_isLeader);
+                sendInvite.gameObject.SetActive(_isLeader);
             }
             else
             {
@@ -209,5 +215,23 @@ public class GroupDetails : MonoBehaviour
     public void LoadEditGroupScene()
     {
         SceneManager.LoadScene("EditGroup");
+    }
+    
+    public async void SendInvitation()
+    {
+        var inviteeName = inviteInput.text;
+        if (string.IsNullOrEmpty(inviteeName)) return;
+
+        try
+        {
+            var groupId = long.Parse(_groupIdString);
+            var service = new BackendServiceClient();
+            await service.SendInvitation(inviteeName, groupId);
+            Debug.Log("Invitation sent successfully");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error sending invitation: {e.Message}");
+        }
     }
 }

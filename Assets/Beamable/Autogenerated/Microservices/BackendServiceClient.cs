@@ -32,18 +32,32 @@ namespace Beamable.Server.Clients
         }
         
         /// <summary>
-        /// Call the ServerCall method on the BackendService microservice
-        /// <see cref="Beamable.Microservices.BackendService.ServerCall"/>
+        /// Call the SendInvitation method on the BackendService microservice
+        /// <see cref="Beamable.Microservices.BackendService.SendInvitation"/>
         /// </summary>
-        public Beamable.Common.Promise<Beamable.Common.Unit> ServerCall()
+        public Beamable.Common.Promise<System.Threading.Tasks.Task> SendInvitation(string invitee, long groupId)
         {
+            object raw_invitee = invitee;
+            object raw_groupId = groupId;
             System.Collections.Generic.Dictionary<string, object> serializedFields = new System.Collections.Generic.Dictionary<string, object>();
-            return this.Request<Beamable.Common.Unit>("BackendService", "ServerCall", serializedFields);
+            serializedFields.Add("invitee", raw_invitee);
+            serializedFields.Add("groupId", raw_groupId);
+            return this.Request<System.Threading.Tasks.Task>("BackendService", "SendInvitation", serializedFields);
         }
     }
     
     internal sealed class MicroserviceParametersBackendServiceClient
     {
+        
+        [System.SerializableAttribute()]
+        internal sealed class ParameterSystem_String : MicroserviceClientDataWrapper<string>
+        {
+        }
+        
+        [System.SerializableAttribute()]
+        internal sealed class ParameterSystem_Int64 : MicroserviceClientDataWrapper<long>
+        {
+        }
     }
     
     [BeamContextSystemAttribute()]

@@ -11,6 +11,7 @@
 <assembly fullname="Beamable.Installer.SmallerJSON" preserve="all"/>
 <assembly fullname="Beamable.Integrations.Firebase.FirebaseService" preserve="all"/>
 <assembly fullname="Beamable.JsonSerializable" preserve="all"/>
+<assembly fullname="Beamable.Microservice.BackendService" preserve="all"/>
 <assembly fullname="Beamable.Microservice.NotificationsService" preserve="all"/>
 <assembly fullname="Beamable.Microservice.UserService" preserve="all"/>
 <assembly fullname="Beamable.Platform" preserve="all"/>
@@ -19,6 +20,7 @@
 <assembly fullname="Beamable.Service" preserve="all"/>
 <assembly fullname="Beamable.SmallerJSON" preserve="all"/>
 <assembly fullname="Beamable.Spew" preserve="all"/>
+<assembly fullname="Beamable.Storage.BackendStorage" preserve="all"/>
 <assembly fullname="Beamable.Storage.UserGroupData" preserve="all"/>
 <assembly fullname="Beamable.UnityUIExtensions" preserve="all"/>
 <assembly fullname="Unity.Beamable" preserve="all"/>
