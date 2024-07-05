@@ -28,12 +28,8 @@ namespace Beamable.Microservices
 
             var invitation = new InviteData
             {
-                gamerTag = inviteeGamerTag,
                 groupId = groupId
             };
-            
-            var invitationCollection = await Storage.BackendStorageCollection<InviteData>();
-            await invitationCollection.InsertOneAsync(invitation);
 
             await SendNotification(new List<long> { inviteeGamerTag }, "GroupInvite", invitation);
         }
