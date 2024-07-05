@@ -21,14 +21,14 @@ This project is focused on implementing a group management feature for players.
 - **As a player, if I am the leader and I choose to leave, I can assign someone as the new leader.**
 - **As a player, if someone puts a message in a chat room, I get a push notification.**
 - **As a player, I can join other chat rooms, view the message history, and leave messages.**
+- **As a player, if I am invited to a group, it appears as a pop-up the next time they log in. They can decide to join or ignore the invite.**
+- **As a player, if I am the leader, I can invite someone to the group.**
 
 ### In Progress
 
-- **As a player, if I am the leader, I can invite someone to the group.**
 
 ### Next
 
-- **As a player, if I am invited to a group, it appears as a pop-up the next time they log in. They can decide to join or ignore the invite.**
 
 ### To Do
 
