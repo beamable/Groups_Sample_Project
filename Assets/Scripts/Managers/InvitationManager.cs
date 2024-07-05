@@ -1,7 +1,10 @@
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 using Beamable;
 using Beamable.Common.Api.Notifications;
 using Beamable.Common.Models;
-using Beamable.Installer.SmallerJSON;
+using Beamable.Serialization.SmallerJSON;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,7 +26,7 @@ namespace Managers
         private async void Start()
         {
             InitializePopupComponents();
-            SetupInvitationListener();
+           await SetupInvitationListener();
 
             _groupManager = new PlayerGroupManager(_beamContext);
             await _groupManager.Initialize();
@@ -51,7 +54,7 @@ namespace Managers
             }
         }
 
-        private async void SetupInvitationListener()
+        private async Task SetupInvitationListener()
         {
             _beamContext = await BeamContext.Default.Instance;
             _beamContext.Api.NotificationService.Subscribe("GroupInvite", HandleInvitation);
@@ -60,26 +63,36 @@ namespace Managers
 
         private async void HandleInvitation(object payload)
         {
-            Debug.Log("Received payload: " + JsonUtility.FromJson<InviteData>(payload.ToString()));
+            Debug.Log("Received payload: " + payload);
 
             try
             {
                 // Try to parse the payload as a JSON string
-                if (payload is string jsonPayload)
+                if (payload is ArrayDict arrayDict)
                 {
-                    Debug.Log("JsonPayload " + jsonPayload);
-                    var inviteData = JsonUtility.FromJson<InviteData>(jsonPayload);
-                    Debug.Log($"Parsed InviteData: gamerTag={inviteData.gamerTag}, groupId={inviteData.groupId}");
+                    if (arrayDict.TryGetValue("stringValue", out var jsonString))
+                    {
+                        var inviteData = JsonUtility.FromJson<InviteData>(jsonString.ToString());
+                        Debug.Log($"Parsed InviteData: gamerTag={inviteData.gamerTag}, groupId={inviteData.groupId}");
 
-                    var group = await _groupManager.GetGroup(inviteData.groupId);
-                    _inviteMessage.text = $"You've been invited to join {group.name}";
-                    invitePopup.SetActive(true);
+                        var group = await _groupManager.GetGroup(inviteData.groupId);
+                        _inviteMessage.text = $"You've been invited to join {group.name}";
+                        invitePopup.SetActive(true);
 
-                    _acceptButton.onClick.RemoveAllListeners();
-                    _declineButton.onClick.RemoveAllListeners();
+                        _acceptButton.onClick.RemoveAllListeners();
+                        _declineButton.onClick.RemoveAllListeners();
 
-                    _acceptButton.onClick.AddListener(() => AcceptInvite(inviteData.groupId));
-                    _declineButton.onClick.AddListener(DeclineInvite);
+                        _acceptButton.onClick.AddListener(() => AcceptInvite(inviteData.groupId));
+                        _declineButton.onClick.AddListener(DeclineInvite);
+                    }
+                    else
+                    {
+                        Debug.LogError("No 'stringValue' found in payload");
+                    }
+                }
+                else if (payload is Dictionary<string, object> dict && dict.Count == 0)
+                {
+                    Debug.LogWarning("Received an empty payload");
                 }
                 else
                 {
