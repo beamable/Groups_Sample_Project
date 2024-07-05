@@ -21,8 +21,6 @@ public class CreateGroups : MonoBehaviour
     [SerializeField]
     private TMP_InputField groupNameInput;
     [SerializeField]
-    private TMP_InputField minMembersInput;
-    [SerializeField]
     private TMP_InputField maxMembersInput;
     [SerializeField]
     private Button createGroupButton;
@@ -62,7 +60,6 @@ public class CreateGroups : MonoBehaviour
     private void SetupUIListeners()
     {
         groupNameInput.onValueChanged.AddListener(CheckFields);
-        minMembersInput.onValueChanged.AddListener(CheckFields);
         maxMembersInput.onValueChanged.AddListener(CheckFields);
     }
 
@@ -98,7 +95,7 @@ public class CreateGroups : MonoBehaviour
         var generatedTag = GenerateTag(groupNameInput.text);
         var type = GetDropdownValue();
 
-        var response = await _mainPlayer.CreateGroup(groupNameInput.text, generatedTag, type, int.Parse(minMembersInput.text),
+        var response = await _mainPlayer.CreateGroup(groupNameInput.text, generatedTag, type, 0,
             int.Parse(maxMembersInput.text), usernameInput.text);
 
         if (!string.IsNullOrEmpty(response.errorMessage))
@@ -116,7 +113,6 @@ public class CreateGroups : MonoBehaviour
     private void CheckFields(string value)
     {
         var allFieldsCompleted = !string.IsNullOrEmpty(groupNameInput.text) &&
-                                 !string.IsNullOrEmpty(minMembersInput.text) &&
                                  !string.IsNullOrEmpty(maxMembersInput.text);
 
         createGroupButton.interactable = allFieldsCompleted;

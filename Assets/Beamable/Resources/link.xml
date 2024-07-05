@@ -20,7 +20,6 @@
 <assembly fullname="Beamable.Service" preserve="all"/>
 <assembly fullname="Beamable.SmallerJSON" preserve="all"/>
 <assembly fullname="Beamable.Spew" preserve="all"/>
-<assembly fullname="Beamable.Storage.BackendStorage" preserve="all"/>
 <assembly fullname="Beamable.Storage.UserGroupData" preserve="all"/>
 <assembly fullname="Beamable.UnityUIExtensions" preserve="all"/>
 <assembly fullname="Unity.Beamable" preserve="all"/>
