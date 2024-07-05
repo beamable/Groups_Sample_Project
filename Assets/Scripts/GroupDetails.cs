@@ -227,6 +227,7 @@ public class GroupDetails : MonoBehaviour
             var groupId = long.Parse(_groupIdString);
             var service = new BackendServiceClient();
             await service.SendInvitation(inviteeName, groupId);
+            inviteInput.text = "";
             Debug.Log("Invitation sent successfully");
         }
         catch (System.Exception e)

@@ -15,6 +15,7 @@ namespace Managers
     {
         private BeamContext _beamContext;
         private PlayerGroupManager _groupManager;
+        private bool isSubscribed = false;
 
         [SerializeField]
         private GameObject invitePopup;
@@ -26,7 +27,7 @@ namespace Managers
         private async void Start()
         {
             InitializePopupComponents();
-           await SetupInvitationListener();
+            await SetupInvitationListener();
 
             _groupManager = new PlayerGroupManager(_beamContext);
             await _groupManager.Initialize();
@@ -58,13 +59,12 @@ namespace Managers
         {
             _beamContext = await BeamContext.Default.Instance;
             _beamContext.Api.NotificationService.Subscribe("GroupInvite", HandleInvitation);
+            isSubscribed = true;
             Debug.Log("Subscribed to GroupInvite notifications.");
         }
 
         private async void HandleInvitation(object payload)
         {
-            Debug.Log("Received payload: " + payload);
-
             try
             {
                 // Try to parse the payload as a JSON string
@@ -73,7 +73,6 @@ namespace Managers
                     if (arrayDict.TryGetValue("stringValue", out var jsonString))
                     {
                         var inviteData = JsonUtility.FromJson<InviteData>(jsonString.ToString());
-                        Debug.Log($"Parsed InviteData: gamerTag={inviteData.gamerTag}, groupId={inviteData.groupId}");
 
                         var group = await _groupManager.GetGroup(inviteData.groupId);
                         _inviteMessage.text = $"You've been invited to join {group.name}";
@@ -114,6 +113,26 @@ namespace Managers
         private void DeclineInvite()
         {
             invitePopup.SetActive(false);
+        }
+
+        private void OnDisable()
+        {
+            if (isSubscribed && _beamContext != null)
+            {
+                _beamContext.Api.NotificationService.Unsubscribe("GroupInvite", HandleInvitation);
+                isSubscribed = false;
+                Debug.Log("Unsubscribed from GroupInvite notifications.");
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (isSubscribed && _beamContext != null)
+            {
+                _beamContext.Api.NotificationService.Unsubscribe("GroupInvite", HandleInvitation);
+                isSubscribed = false;
+                Debug.Log("Unsubscribed from GroupInvite notifications.");
+            }
         }
     }
 }
