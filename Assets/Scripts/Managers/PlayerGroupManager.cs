@@ -99,18 +99,23 @@ namespace Managers
             }
         }
 
-        public async Task JoinGroup(long groupId, string username)
+        public async Task JoinGroup(long groupId, string username = null)
         {
             await _groupsViewInitialized.Task; // Wait for _groupsView to be initialized
             await LeaveGroups();
-            
+    
             var account = _beamContext.Accounts.Current;
             await _beamContext.Api.GroupsService.JoinGroup(groupId);
-            await _userService.SetPlayerAvatarName(account.GamerTag, username);
-            Debug.Log(account.GamerTag + " " + username);
+
+            if (!string.IsNullOrEmpty(username))
+            {
+                await _userService.SetPlayerAvatarName(account.GamerTag, username);
+                Debug.Log(account.GamerTag + " " + username);
+            }
 
             Debug.Log("Joined group: " + groupId);
         }
+
         
         public async Task<Group> GetGroup(long groupId)
         {

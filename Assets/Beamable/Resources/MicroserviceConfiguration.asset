@@ -37,6 +37,30 @@ MonoBehaviour:
       SshPort: 11101
     LastBuiltCheckSum: 
     RobotId: 
+  - ServiceName: BackendService
+    Enabled: 1
+    Archived: 0
+    TemplateId: small
+    CustomDockerFileStrings: 
+    IncludeDebugTools: 0
+    DebugData:
+      Username: root
+      Password: Password!
+      SshPort: 11102
+    LastBuiltCheckSum: 
+    RobotId: 
+  - ServiceName: NotificationsService
+    Enabled: 1
+    Archived: 0
+    TemplateId: small
+    CustomDockerFileStrings: 
+    IncludeDebugTools: 0
+    DebugData:
+      Username: root
+      Password: Password!
+      SshPort: 11103
+    LastBuiltCheckSum: 
+    RobotId: 
   StorageObjects:
   - StorageName: UserGroupData
     StorageType: mongov1
@@ -47,8 +71,314 @@ MonoBehaviour:
     LocalUIPort: 13100
     LocalInitUser: beamable
     LocalInitPass: beamable
-  ServiceCodeHandlesOnLastDomainReload: []
-  LastBuiltDockerImagesCodeHandles: []
+  - StorageName: BackendStorage
+    StorageType: mongov1
+    Enabled: 1
+    Archived: 0
+    TemplateId: small
+    LocalDataPort: 12101
+    LocalUIPort: 13101
+    LocalInitUser: beamable
+    LocalInitPass: beamable
+  ServiceCodeHandlesOnLastDomainReload:
+  - ServiceName: BackendService
+    CodeClass: 1
+    CodeDirectory: Assets\Beamable\Microservices\BackendService
+    AsmDefInfo:
+      Name: Beamable.Microservice.BackendService
+      References:
+      - Unity.Beamable.Runtime.Common
+      - Unity.Beamable.Server.Runtime
+      - Unity.Beamable.Server.Runtime.Shared
+      - Unity.Beamable
+      - Beamable.SmallerJSON
+      - Unity.Beamable.Server.Runtime.Common
+      - Unity.Beamable.Server.Runtime.Mocks
+      - Unity.Beamable.Customer.Common
+      - Beamable.Storage.UserGroupData
+      - Beamable.Storage.BackendStorage
+      DllReferences:
+      - DnsClient.dll
+      - MongoDB.Bson.dll
+      - MongoDB.Driver.Core.dll
+      - MongoDB.Driver.dll
+      - MongoDB.Libmongocrypt.dll
+      - System.Buffers.dll
+      - System.Runtime.CompilerServices.Unsafe.dll
+      - SharpCompress.dll
+      Location: Assets/Beamable/Microservices/BackendService/Beamable.Microservice.BackendService.asmdef
+      IncludePlatforms: []
+      AutoReferenced: 0
+    Checksum: AC3F687BD993A522F20A0744E8B739E9
+  - ServiceName: BackendStorage
+    CodeClass: 2
+    CodeDirectory: Assets\Beamable\StorageObjects\BackendStorage
+    AsmDefInfo:
+      Name: Beamable.Storage.BackendStorage
+      References:
+      - Unity.Beamable.Runtime.Common
+      - Unity.Beamable.Server.Runtime
+      - Unity.Beamable.Server.Runtime.Shared
+      - Unity.Beamable
+      - Beamable.SmallerJSON
+      - Unity.Beamable.Server.Runtime.Common
+      - Unity.Beamable.Server.Runtime.Mocks
+      - Unity.Beamable.Customer.Common
+      DllReferences:
+      - DnsClient.dll
+      - MongoDB.Bson.dll
+      - MongoDB.Driver.Core.dll
+      - MongoDB.Driver.dll
+      - MongoDB.Libmongocrypt.dll
+      - System.Buffers.dll
+      - System.Runtime.CompilerServices.Unsafe.dll
+      - SharpCompress.dll
+      Location: Assets/Beamable/StorageObjects/BackendStorage/Beamable.Storage.BackendStorage.asmdef
+      IncludePlatforms: []
+      AutoReferenced: 0
+    Checksum: 94FF238C101610726DFF822989CD6138
+  - ServiceName: Beamable.Integrations.Firebase.FirebaseService
+    CodeClass: 3
+    CodeDirectory: Assets\Beamable\Integrations\Firebase
+    AsmDefInfo:
+      Name: Beamable.Integrations.Firebase.FirebaseService
+      References:
+      - GUID:8096aa2f7644d40f08b1fed854463288
+      - GUID:ec8759ed81aca4752b7e9ded6e302fd7
+      DllReferences:
+      - Google.Apis.Auth.dll
+      - Google.Apis.Core.dll
+      - Newtonsoft.Json.dll
+      Location: Assets/Beamable/Integrations/Firebase/Beamable.Integrations.Firebase.FirebaseService.asmdef
+      IncludePlatforms: []
+      AutoReferenced: 0
+    Checksum: 2F68048196853ED3B2AD7F60B95D2BC1
+  - ServiceName: NotificationsService
+    CodeClass: 1
+    CodeDirectory: Assets\Beamable\Microservices\NotificationsService
+    AsmDefInfo:
+      Name: Beamable.Microservice.NotificationsService
+      References:
+      - Unity.Beamable.Runtime.Common
+      - Unity.Beamable.Server.Runtime
+      - Unity.Beamable.Server.Runtime.Shared
+      - Unity.Beamable
+      - Beamable.SmallerJSON
+      - Unity.Beamable.Server.Runtime.Common
+      - Unity.Beamable.Server.Runtime.Mocks
+      - Unity.Beamable.Customer.Common
+      - Beamable.Storage.UserGroupData
+      - Beamable.Integrations.Firebase.FirebaseService
+      DllReferences:
+      - DnsClient.dll
+      - MongoDB.Bson.dll
+      - MongoDB.Driver.Core.dll
+      - MongoDB.Driver.dll
+      - MongoDB.Libmongocrypt.dll
+      - System.Buffers.dll
+      - System.Runtime.CompilerServices.Unsafe.dll
+      - SharpCompress.dll
+      Location: Assets/Beamable/Microservices/NotificationsService/Beamable.Microservice.NotificationsService.asmdef
+      IncludePlatforms: []
+      AutoReferenced: 0
+    Checksum: 1D3123EEB25BF1948CBED4FFF2FD3F03
+  - ServiceName: Unity.Beamable.Customer.Common
+    CodeClass: 3
+    CodeDirectory: Assets\Beamable\Common
+    AsmDefInfo:
+      Name: Unity.Beamable.Customer.Common
+      References:
+      - Unity.Beamable.Runtime.Common
+      - Unity.Beamable.Server.Runtime.Common
+      - Unity.Beamable.Server.Runtime.Mocks
+      - Beamable.SmallerJSON
+      DllReferences: []
+      Location: Assets/Beamable/Common/Unity.Beamable.Customer.Common.asmdef
+      IncludePlatforms: []
+      AutoReferenced: 0
+    Checksum: 0AF7513C323127F6C61058ED2EB16B80
+  - ServiceName: UserGroupData
+    CodeClass: 2
+    CodeDirectory: Assets\Beamable\StorageObjects\UserGroupData
+    AsmDefInfo:
+      Name: Beamable.Storage.UserGroupData
+      References:
+      - Unity.Beamable.Runtime.Common
+      - Unity.Beamable.Server.Runtime
+      - Unity.Beamable.Server.Runtime.Shared
+      - Unity.Beamable
+      - Beamable.SmallerJSON
+      - Unity.Beamable.Server.Runtime.Common
+      - Unity.Beamable.Server.Runtime.Mocks
+      - Unity.Beamable.Customer.Common
+      DllReferences:
+      - DnsClient.dll
+      - MongoDB.Bson.dll
+      - MongoDB.Driver.Core.dll
+      - MongoDB.Driver.dll
+      - MongoDB.Libmongocrypt.dll
+      - System.Buffers.dll
+      - System.Runtime.CompilerServices.Unsafe.dll
+      - SharpCompress.dll
+      Location: Assets/Beamable/StorageObjects/UserGroupData/Beamable.Storage.UserGroupData.asmdef
+      IncludePlatforms: []
+      AutoReferenced: 0
+    Checksum: 2AE5FBAE5CFCEC856E5D5D5938024673
+  - ServiceName: UserService
+    CodeClass: 1
+    CodeDirectory: Assets\Beamable\Microservices\UserService
+    AsmDefInfo:
+      Name: Beamable.Microservice.UserService
+      References:
+      - Unity.Beamable.Runtime.Common
+      - Unity.Beamable.Server.Runtime
+      - Unity.Beamable.Server.Runtime.Shared
+      - Unity.Beamable
+      - Beamable.SmallerJSON
+      - Unity.Beamable.Server.Runtime.Common
+      - Unity.Beamable.Server.Runtime.Mocks
+      - Unity.Beamable.Customer.Common
+      - Beamable.Storage.UserGroupData
+      DllReferences:
+      - DnsClient.dll
+      - MongoDB.Bson.dll
+      - MongoDB.Driver.Core.dll
+      - MongoDB.Driver.dll
+      - MongoDB.Libmongocrypt.dll
+      - System.Buffers.dll
+      - System.Runtime.CompilerServices.Unsafe.dll
+      - SharpCompress.dll
+      Location: Assets/Beamable/Microservices/UserService/Beamable.Microservice.UserService.asmdef
+      IncludePlatforms: []
+      AutoReferenced: 0
+    Checksum: 19B8FF95884876587423074E7B1B366D
+  LastBuiltDockerImagesCodeHandles:
+  - ServiceName: BackendService
+    CodeClass: 1
+    CodeDirectory: Assets\Beamable\Microservices\BackendService
+    AsmDefInfo:
+      Name: Beamable.Microservice.BackendService
+      References:
+      - Unity.Beamable.Runtime.Common
+      - Unity.Beamable.Server.Runtime
+      - Unity.Beamable.Server.Runtime.Shared
+      - Unity.Beamable
+      - Beamable.SmallerJSON
+      - Unity.Beamable.Server.Runtime.Common
+      - Unity.Beamable.Server.Runtime.Mocks
+      - Unity.Beamable.Customer.Common
+      - Beamable.Storage.UserGroupData
+      - Beamable.Storage.BackendStorage
+      DllReferences:
+      - DnsClient.dll
+      - MongoDB.Bson.dll
+      - MongoDB.Driver.Core.dll
+      - MongoDB.Driver.dll
+      - MongoDB.Libmongocrypt.dll
+      - System.Buffers.dll
+      - System.Runtime.CompilerServices.Unsafe.dll
+      - SharpCompress.dll
+      Location: Assets/Beamable/Microservices/BackendService/Beamable.Microservice.BackendService.asmdef
+      IncludePlatforms: []
+      AutoReferenced: 0
+    Checksum: AC3F687BD993A522F20A0744E8B739E9
+  - ServiceName: BackendStorage
+    CodeClass: 2
+    CodeDirectory: Assets\Beamable\StorageObjects\BackendStorage
+    AsmDefInfo:
+      Name: Beamable.Storage.BackendStorage
+      References:
+      - Unity.Beamable.Runtime.Common
+      - Unity.Beamable.Server.Runtime
+      - Unity.Beamable.Server.Runtime.Shared
+      - Unity.Beamable
+      - Beamable.SmallerJSON
+      - Unity.Beamable.Server.Runtime.Common
+      - Unity.Beamable.Server.Runtime.Mocks
+      - Unity.Beamable.Customer.Common
+      DllReferences:
+      - DnsClient.dll
+      - MongoDB.Bson.dll
+      - MongoDB.Driver.Core.dll
+      - MongoDB.Driver.dll
+      - MongoDB.Libmongocrypt.dll
+      - System.Buffers.dll
+      - System.Runtime.CompilerServices.Unsafe.dll
+      - SharpCompress.dll
+      Location: Assets/Beamable/StorageObjects/BackendStorage/Beamable.Storage.BackendStorage.asmdef
+      IncludePlatforms: []
+      AutoReferenced: 0
+    Checksum: 94FF238C101610726DFF822989CD6138
+  - ServiceName: UserService
+    CodeClass: 1
+    CodeDirectory: Assets\Beamable\Microservices\UserService
+    AsmDefInfo:
+      Name: Beamable.Microservice.UserService
+      References:
+      - Unity.Beamable.Runtime.Common
+      - Unity.Beamable.Server.Runtime
+      - Unity.Beamable.Server.Runtime.Shared
+      - Unity.Beamable
+      - Beamable.SmallerJSON
+      - Unity.Beamable.Server.Runtime.Common
+      - Unity.Beamable.Server.Runtime.Mocks
+      - Unity.Beamable.Customer.Common
+      - Beamable.Storage.UserGroupData
+      DllReferences:
+      - DnsClient.dll
+      - MongoDB.Bson.dll
+      - MongoDB.Driver.Core.dll
+      - MongoDB.Driver.dll
+      - MongoDB.Libmongocrypt.dll
+      - System.Buffers.dll
+      - System.Runtime.CompilerServices.Unsafe.dll
+      - SharpCompress.dll
+      Location: Assets/Beamable/Microservices/UserService/Beamable.Microservice.UserService.asmdef
+      IncludePlatforms: []
+      AutoReferenced: 0
+    Checksum: 19B8FF95884876587423074E7B1B366D
+  - ServiceName: Unity.Beamable.Customer.Common
+    CodeClass: 3
+    CodeDirectory: Assets\Beamable\Common
+    AsmDefInfo:
+      Name: Unity.Beamable.Customer.Common
+      References:
+      - Unity.Beamable.Runtime.Common
+      - Unity.Beamable.Server.Runtime.Common
+      - Unity.Beamable.Server.Runtime.Mocks
+      - Beamable.SmallerJSON
+      DllReferences: []
+      Location: Assets/Beamable/Common/Unity.Beamable.Customer.Common.asmdef
+      IncludePlatforms: []
+      AutoReferenced: 0
+    Checksum: 0AF7513C323127F6C61058ED2EB16B80
+  - ServiceName: UserGroupData
+    CodeClass: 2
+    CodeDirectory: Assets\Beamable\StorageObjects\UserGroupData
+    AsmDefInfo:
+      Name: Beamable.Storage.UserGroupData
+      References:
+      - Unity.Beamable.Runtime.Common
+      - Unity.Beamable.Server.Runtime
+      - Unity.Beamable.Server.Runtime.Shared
+      - Unity.Beamable
+      - Beamable.SmallerJSON
+      - Unity.Beamable.Server.Runtime.Common
+      - Unity.Beamable.Server.Runtime.Mocks
+      - Unity.Beamable.Customer.Common
+      DllReferences:
+      - DnsClient.dll
+      - MongoDB.Bson.dll
+      - MongoDB.Driver.Core.dll
+      - MongoDB.Driver.dll
+      - MongoDB.Libmongocrypt.dll
+      - System.Buffers.dll
+      - System.Runtime.CompilerServices.Unsafe.dll
+      - SharpCompress.dll
+      Location: Assets/Beamable/StorageObjects/UserGroupData/Beamable.Storage.UserGroupData.asmdef
+      IncludePlatforms: []
+      AutoReferenced: 0
+    Checksum: 2AE5FBAE5CFCEC856E5D5D5938024673
   CustomContainerPrefix: 
   AutoReferenceContent: 0
   AutoBuildCommonAssembly: 1
