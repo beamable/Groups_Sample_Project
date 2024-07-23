@@ -103,8 +103,8 @@ public class GroupDetails : MonoBehaviour
                 {
                     foreach (var member in group.members)
                     {
-                        var username = await _userService.GetPlayerAvatarName(member.gamerTag);
-                        AddMemberItem(username.data, group.id, member.gamerTag);
+                        // var username = await _userService.GetPlayerAvatarName(member.gamerTag);
+                        AddMemberItem(member.gamerTag.ToString(), group.id, member.gamerTag);
                     }
                 }
 
@@ -217,22 +217,22 @@ public class GroupDetails : MonoBehaviour
         SceneManager.LoadScene("EditGroup");
     }
     
-    public async void SendInvitation()
-    {
-        var inviteeName = inviteInput.text;
-        if (string.IsNullOrEmpty(inviteeName)) return;
-
-        try
-        {
-            var groupId = long.Parse(_groupIdString);
-            var service = new BackendServiceClient();
-            await service.SendInvitation(inviteeName, groupId);
-            inviteInput.text = "";
-            Debug.Log("Invitation sent successfully");
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"Error sending invitation: {e.Message}");
-        }
-    }
+    // public async void SendInvitation()
+    // {
+    //     var inviteeName = inviteInput.text;
+    //     if (string.IsNullOrEmpty(inviteeName)) return;
+    //
+    //     try
+    //     {
+    //         var groupId = long.Parse(_groupIdString);
+    //         var service = new BackendServiceClient();
+    //         await service.SendInvitation(inviteeName, groupId);
+    //         inviteInput.text = "";
+    //         Debug.Log("Invitation sent successfully");
+    //     }
+    //     catch (System.Exception e)
+    //     {
+    //         Debug.LogError($"Error sending invitation: {e.Message}");
+    //     }
+    // }
 }
