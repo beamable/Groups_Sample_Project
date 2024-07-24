@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Beamable;
@@ -7,7 +6,6 @@ using Beamable.Common.Models;
 using Beamable.Experimental.Api.Chat;
 using Beamable.Server.Clients;
 using TMPro;
-using Unity.Notifications.Android;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -31,6 +29,13 @@ public class ChatRoom : MonoBehaviour
     private TMP_Text chatLogText;
     [SerializeField]
     private TMP_InputField messageInput;
+
+    private readonly HashSet<string> _censoredWords = new HashSet<string>
+    {
+        "fuck",
+        "porn",
+        // Add more words as needed
+    };
 
     private async void Start()
     {
@@ -59,40 +64,35 @@ public class ChatRoom : MonoBehaviour
 
     private async void OnMessageReceived(Message message)
     {
-        Debug.Log("censored content: " + message.censoredContent );
-        Debug.Log("content: " + message.content);
+        Debug.Log("Censored content: " + message.content);
     }
 
-    
-    
+    private string CensorMessage(string message)
+    {
+        foreach (var word in _censoredWords)
+        {
+            message = message.Replace(word, new string('*', word.Length), StringComparison.OrdinalIgnoreCase);
+        }
+        return message;
+    }
     
     public void SendMessage()
     {
         if (_currentRoom != null && !string.IsNullOrEmpty(messageInput.text))
         {
-            // Create a new ChatFeed object with the sender, message, and timestamp
+            // Censor the message
+            string censoredMessage = CensorMessage(messageInput.text);
             var feed = new ChatFeed(
                 _beamContext.Accounts.Current.GamerTag,
-                messageInput.text,
+                censoredMessage,
                 DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss")
             );
 
-            // Serialize the ChatFeed object to JSON
             string feedJson = JsonUtility.ToJson(feed);
-
-            // Create a Payload object with the serialized ChatFeed JSON
             var payload = new Payload(PayloadType.Chat, feedJson);
-
-            // Serialize the Payload object to JSON
             string payloadJson = JsonUtility.ToJson(payload);
-
-            // Debug log to verify the serialized payload
             Debug.Log("Payload JSON to send: " + payloadJson);
-
-            // Send the serialized Payload JSON to the current room
             _currentRoom.SendMessage(payloadJson);
-
-            // Clear the message input field
             messageInput.text = "";
         }
     }
