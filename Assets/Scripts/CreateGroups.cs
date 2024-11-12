@@ -95,7 +95,7 @@ public class CreateGroups : MonoBehaviour
         var generatedTag = GenerateTag(groupNameInput.text);
         var type = GetDropdownValue();
 
-        var response = await _mainPlayer.CreateGroup(groupNameInput.text, generatedTag, type, 0,
+        var response = await _mainPlayer.CreateGroup(groupNameInput.text, null, type, 0,
             int.Parse(maxMembersInput.text), usernameInput.text);
 
         if (!string.IsNullOrEmpty(response.errorMessage))

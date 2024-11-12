@@ -16,8 +16,9 @@ namespace Managers
         private TaskCompletionSource<bool> _groupsViewInitialized;
         private bool _isSubscribed;
 
-        public PlayerGroupManager(BeamContext beamContext)
+  public PlayerGroupManager(BeamContext beamContext)
         {
+            Debug.Log("Initializing PlayerGroupManager...");
             _beamContext = beamContext;
             _userService = new UserServiceClient();
             _groupsViewInitialized = new TaskCompletionSource<bool>();
@@ -25,72 +26,91 @@ namespace Managers
 
         public async Task Initialize()
         {
-            if (_isSubscribed) return;
-            
+            if (_isSubscribed)
+            {
+                Debug.Log("Already subscribed, skipping Initialize.");
+                return;
+            }
+
+            Debug.Log("Waiting for BeamContext account readiness...");
             await _beamContext.Accounts.OnReady;
+
+            Debug.Log("Subscribing to GroupsService...");
             _beamContext.Api.GroupsService.Subscribe(groupsView =>
             {
                 _groupsView = groupsView;
                 _groupsViewInitialized.TrySetResult(true);
+                Debug.Log("GroupsView subscribed and initialized.");
             });
 
             _isSubscribed = true;
+            Debug.Log("Initialization complete.");
         }
 
         public async Task<Response<long>> CreateGroup(string groupName, string groupTag, string groupType, int minMembers, int maxMembers, string username)
         {
-            await _groupsViewInitialized.Task; // Wait for _groupsView to be initialized
-            await LeaveGroups();
-            var account = _beamContext.Accounts.Current;
+            Debug.Log("Starting CreateGroup process...");
+            await _groupsViewInitialized.Task;
+            Debug.Log("_groupsView initialized.");
 
-            // Check if the username is empty
+            Debug.Log("Leaving existing groups...");
+            await LeaveGroups();
+            Debug.Log("Left existing groups.");
+
+            var account = _beamContext.Accounts.Current;
+            Debug.Log($"Current account obtained: {account?.GamerTag}");
+
             if (!string.IsNullOrEmpty(username))
             {
-                // Attempt to set the avatar name first
+                Debug.Log($"Setting player avatar name: {username}");
                 var response = await _userService.SetPlayerAvatarName(account.GamerTag, username);
-
-                // If there's an error, log it and return the error response
+                
                 if (!string.IsNullOrEmpty(response.errorMessage))
                 {
-                    Debug.LogError(response.errorMessage);
+                    Debug.LogError($"Error setting avatar name: {response.errorMessage}");
                     return new Response<long>(default, response.errorMessage);
                 }
             }
 
-            // Proceed to create the group
+            Debug.Log("Creating new group...");
             var groupCreateRequest = new GroupCreateRequest(groupName, groupTag, groupType, minMembers, maxMembers);
             var groupResponse = await _beamContext.Api.GroupsService.CreateGroup(groupCreateRequest);
 
-            Debug.Log("New group created: " + groupName);
+            Debug.Log($"New group created successfully: {groupName}, ID: {groupResponse.group.id}");
             return new Response<long>(groupResponse.group.id);
         }
-
 
         private async Task LeaveGroups()
         {
             if (_groupsView == null)
             {
-                Debug.LogError("_groupsView is not initialized.");
+                Debug.LogError("_groupsView is not initialized, cannot leave groups.");
                 return;
             }
-            
+
+            Debug.Log("Leaving all joined groups...");
             foreach (var group in _groupsView.Groups)
             {
+                Debug.Log($"Leaving group ID: {group.Group.id}");
                 await _beamContext.Api.GroupsService.LeaveGroup(group.Group.id);
             }
-            Debug.Log("Left groups");
+            Debug.Log("All groups left.");
+
             _beamContext.Api.GroupsService.Subscribable.ForceRefresh();
-            await Task.Delay(300);
+            Debug.Log("Forced groups refresh.");
+            await Task.Delay(300); // Allowing refresh to propagate
         }
         
         public async Task LeaveGroup(long groupId)
         {
             try
             {
+                Debug.Log($"Attempting to leave group ID: {groupId}");
                 var response = await _beamContext.Api.GroupsService.LeaveGroup(groupId);
+
                 if (response != null)
                 {
-                    Debug.Log("Left group successfully");
+                    Debug.Log("Left group successfully.");
                 }
             }
             catch (Exception e)
@@ -101,27 +121,34 @@ namespace Managers
 
         public async Task JoinGroup(long groupId, string username = null)
         {
-            await _groupsViewInitialized.Task; // Wait for _groupsView to be initialized
+            Debug.Log("Starting JoinGroup process...");
+            await _groupsViewInitialized.Task;
+            Debug.Log("_groupsView initialized for JoinGroup.");
+
+            Debug.Log("Leaving existing groups before joining a new group...");
             await LeaveGroups();
-    
+
             var account = _beamContext.Accounts.Current;
+            Debug.Log($"Current account obtained for joining: {account?.GamerTag}");
             await _beamContext.Api.GroupsService.JoinGroup(groupId);
 
             if (!string.IsNullOrEmpty(username))
             {
+                Debug.Log($"Setting player avatar name after joining: {username}");
                 await _userService.SetPlayerAvatarName(account.GamerTag, username);
-                Debug.Log(account.GamerTag + " " + username);
+                Debug.Log($"Avatar name set to {username} for {account.GamerTag}");
             }
 
-            Debug.Log("Joined group: " + groupId);
+            Debug.Log($"Joined group successfully: {groupId}");
         }
 
-        
         public async Task<Group> GetGroup(long groupId)
         {
             try
             {
+                Debug.Log($"Retrieving group details for ID: {groupId}");
                 var group = await _beamContext.Api.GroupsService.GetGroup(groupId);
+                Debug.Log($"Group details retrieved for ID: {groupId}");
                 return group;
             }
             catch (Exception e)
