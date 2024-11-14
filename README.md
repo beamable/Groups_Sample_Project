@@ -23,3 +23,7 @@ This project is focused on implementing a group management feature for players.
 - **As a player, I can join other chat rooms, view the message history, and leave messages.**
 - **As a player, if I am invited to a group, it appears as a pop-up the next time they log in. They can decide to join or ignore the invite.**
 - **As a player, if I am the leader, I can invite someone to the group.**
+
+##Firebase setup:
+
+https://docs.google.com/presentation/d/1CVwTbsxl75x4i7c-U7g7Ter0nMDCrNf-/edit#slide=id.g2e9560d1668_0_56
