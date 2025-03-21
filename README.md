@@ -2,28 +2,29 @@
 
 ## Overview
 
-This project is focused on implementing a group management feature for players.
+Welcome to the **Beamable Groups Sample Project**! This project showcases how to implement group management features in your game using Beamable. It demonstrates how players can create and manage groups, chat in **real-time**, and collaborate within a structured group system.
 
-## User Stories
+## What This Demo Showcases
 
-### Completed
+### Features Demonstrated
+- **Group Creation & Management**: Players can create, edit, and delete groups.
+- **Group Listings & Search**: Players can browse and search for available groups.
+- **Group Membership & Leadership**: Players can join, leave, and manage membership roles.
+- **Real-Time Group Chat**: Players can send and receive messages within their groups.
+- **Push Notifications**: Players get notified of new messages and invitations.
 
-- **As a player, I should be able to create a new group, give it a name, and decide if it is private (not listed in search), open (anyone can apply to join), closed (players must receive invites).**
-- **As a player, I can see a list of all groups. The new group I created will be in the list.**
-- **As a player, I can search for groups by name.**
-- **As a player, I can see a list of all the players in the group.**
-- **As a player, if I am the group leader, I can create another chat room and give it a name.**
-- **As a player who is in a group, I can add messages to the group chat and read messages from other players who leave messages in the group chat in real time.**
-- **As a player, if I am in a group, I can view the default group chat and any history of the chat that is available.**
-- **As a player, I will be the leader of the group and have full control to edit the group or disband (delete) it.**
-- **As a player, if I am the leader, I can kick someone out of the group.**
-- **As a player, if I am the group leader, I can delete chat rooms I’ve created.**
-- **As a player, if I am the leader and I choose to leave, I can assign someone as the new leader.**
-- **As a player, if someone puts a message in a chat room, I get a push notification.**
-- **As a player, I can join other chat rooms, view the message history, and leave messages.**
-- **As a player, if I am invited to a group, it appears as a pop-up the next time they log in. They can decide to join or ignore the invite.**
-- **As a player, if I am the leader, I can invite someone to the group.**
+## Getting Started
 
-## Firebase setup:
+### Steps to Set Up
+1. **Clone** the repository.
+2. **Install dependencies** and set up Firebase. **[Documentation here](https://docs.google.com/presentation/d/1DluDfkltUs82SXxO5TNmcBXvMLOlnzNd8HECnNspCaY/edit#slide=id.g2e9560d1668_0_0)**
+3. **Configure Beamable** within your project (login to your Game Realm).
+4. **Run the demo** and explore the group features.
 
-https://docs.google.com/presentation/d/1CVwTbsxl75x4i7c-U7g7Ter0nMDCrNf-/edit#slide=id.g2e9560d1668_0_56
+For more detailed instructions, please refer to the **[full documentation](https://docs.google.com/document/d/1hA0TAfuTGKOWNhXzP1aA0s0BdPMt70d0UsU7Q2TGcRI/edit?usp=sharing)**.
+
+Here is a sneak peaks of the project:
+
+https://github.com/user-attachments/assets/78c701d1-0919-4c2f-a117-732c61c80517
+
+**We can't wait to see what you build with Beamable Groups! 🚀 Join our [Discord Community](https://discord.com/invite/UHjf25h) for support, tips, and to share your awesome creations!**
