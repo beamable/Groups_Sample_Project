@@ -27,4 +27,11 @@ Here is a sneak peaks of the project:
 
 https://github.com/user-attachments/assets/78c701d1-0919-4c2f-a117-732c61c80517
 
+## Important Note
+
+This project is designed to **showcase** how to use the Beamable Groups feature and does not include full error handling. As a result, you **may encounter errors**, which will appear in the console. These are expected and meant to demonstrate feature implementation.
+
+### Example  
+The **invitation to a group** feature only works if you invite an **existing player**. If you attempt to invite a non-existent player, an error will be logged in the console. 🚀
+
 **We can't wait to see what you build with Beamable Groups! 🚀 Join our [Discord Community](https://discord.com/invite/UHjf25h) for support, tips, and to share your awesome creations!**
